@@ -1,8 +1,8 @@
 # zrr
 
-Package zrr provides errors with metadata as key value pairs.
+Package `zrr` provides errors with metadata as key value pairs.
 
-The errors.Wrap function returns a new error to which we can add metadata.
+The `errors.Wrap` function returns a new error to which we can add metadata.
 For example:
 
 ```

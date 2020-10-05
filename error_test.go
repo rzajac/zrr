@@ -7,102 +7,97 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 )
 
-func TestError(t *testing.T) { suite.Run(t, &ErrorSuite{}) }
-
-type ErrorSuite struct{ suite.Suite }
-
-func (ste *ErrorSuite) Test_Error_New() {
+func Test_Error_New(t *testing.T) {
 	// --- When ---
 	err := New("em0", "ECode")
 
 	// --- Then ---
-	ste.False(err.Immutable())
-	ste.Exactly("em0", err.Error())
-	ste.Exactly(`em0 :: code="ECode"`, err.String())
-	ste.True(err.HasCode("ECode"))
+	assert.False(t, err.Immutable())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, `em0 :: code="ECode"`, err.String())
+	assert.True(t, err.HasCode("ECode"))
 }
 
-func (ste *ErrorSuite) Test_Error_HasKey() {
+func Test_Error_HasKey(t *testing.T) {
 	// --- When ---
 	err := New("em0", "ECode")
 
 	// --- Then ---
-	ste.True(err.HasKey(KCode))
+	assert.True(t, err.HasKey(KCode))
 }
 
-func (ste *ErrorSuite) Test_Error_Newf() {
+func Test_Error_Newf(t *testing.T) {
 	// --- When ---
 	err := Newf("%s message", "error")
 
 	// --- Then ---
-	ste.False(err.Immutable())
-	ste.Exactly("error message", err.Error())
-	ste.Exactly("error message", err.String())
+	assert.False(t, err.Immutable())
+	assert.Exactly(t, "error message", err.Error())
+	assert.Exactly(t, "error message", err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_Imm() {
+func Test_Error_Imm(t *testing.T) {
 	// --- When ---
 	err := Imm("em0")
 
 	// --- Then ---
-	ste.True(err.Immutable())
-	ste.Exactly("em0", err.Error())
-	ste.Exactly("em0", err.String())
+	assert.True(t, err.Immutable())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, "em0", err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_Imm_WithCode() {
+func Test_Error_Imm_WithCode(t *testing.T) {
 	// --- When ---
 	err := Imm("em0", "ECode")
 
 	// --- Then ---
-	ste.True(err.Immutable())
-	ste.Exactly("em0", err.Error())
-	ste.Exactly(`em0 :: code="ECode"`, err.String())
+	assert.True(t, err.Immutable())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, `em0 :: code="ECode"`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_Imm_WithCodes() {
+func Test_Error_Imm_WithCodes(t *testing.T) {
 	// --- When ---
 	err := Imm("em0", "ECode0", "ECode1")
 
 	// --- Then ---
-	ste.True(err.Immutable())
-	ste.Exactly("em0", err.Error())
-	ste.Exactly(`em0 :: code="ECode0"`, err.String())
+	assert.True(t, err.Immutable())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, `em0 :: code="ECode0"`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_Code() {
+func Test_Error_Code(t *testing.T) {
 	// --- When ---
 	err := New("em0").Code("ECode")
 
 	// --- Then ---
-	ste.Exactly(`em0 :: code="ECode"`, err.String())
+	assert.Exactly(t, `em0 :: code="ECode"`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_HasCode() {
+func Test_Error_HasCode(t *testing.T) {
 	// --- Given ---
 	err := New("em0")
-	ste.False(err.HasCode("ECode"))
+	assert.False(t, err.HasCode("ECode"))
 
 	// --- When ---
 	err = err.Code("ECode")
 
 	// --- Then ---
-	ste.True(err.HasCode("ECode"))
-	ste.Exactly(`em0 :: code="ECode"`, err.String())
+	assert.True(t, err.HasCode("ECode"))
+	assert.Exactly(t, `em0 :: code="ECode"`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_Str() {
+func Test_Error_Str(t *testing.T) {
 	// --- When ---
 	err := Newf("em0").Str("key0", "val0")
 
 	// --- Then ---
-	ste.Exactly(`em0 :: key0="val0"`, err.String())
+	assert.Exactly(t, `em0 :: key0="val0"`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_GetStr() {
+func Test_Error_GetStr(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -118,7 +113,7 @@ func (ste *ErrorSuite) Test_Error_GetStr() {
 	}
 
 	for _, tc := range tt {
-		ste.T().Run(tc.testN, func(t *testing.T) {
+		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
 			value, exist := tc.err.GetStr(tc.key)
 
@@ -129,15 +124,15 @@ func (ste *ErrorSuite) Test_Error_GetStr() {
 	}
 }
 
-func (ste *ErrorSuite) Test_Error_Int() {
+func Test_Error_Int(t *testing.T) {
 	// --- When ---
 	err := Newf("em0").Int("key0", 0)
 
 	// --- Then ---
-	ste.Exactly(`em0 :: key0=0`, err.String())
+	assert.Exactly(t, `em0 :: key0=0`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_GetInt() {
+func Test_Error_GetInt(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -153,7 +148,7 @@ func (ste *ErrorSuite) Test_Error_GetInt() {
 	}
 
 	for _, tc := range tt {
-		ste.T().Run(tc.testN, func(t *testing.T) {
+		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
 			value, exist := tc.err.GetInt(tc.key)
 
@@ -164,15 +159,15 @@ func (ste *ErrorSuite) Test_Error_GetInt() {
 	}
 }
 
-func (ste *ErrorSuite) Test_Error_Float64() {
+func Test_Error_Float64(t *testing.T) {
 	// --- When ---
 	err := Newf("em0").Float64("key0", 0.123)
 
 	// --- Then ---
-	ste.Exactly(`em0 :: key0=0.123`, err.String())
+	assert.Exactly(t, `em0 :: key0=0.123`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_GetFloat64() {
+func Test_Error_GetFloat64(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -188,7 +183,7 @@ func (ste *ErrorSuite) Test_Error_GetFloat64() {
 	}
 
 	for _, tc := range tt {
-		ste.T().Run(tc.testN, func(t *testing.T) {
+		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
 			value, exist := tc.err.GetFloat64(tc.key)
 
@@ -199,7 +194,7 @@ func (ste *ErrorSuite) Test_Error_GetFloat64() {
 	}
 }
 
-func (ste *ErrorSuite) Test_Error_Time() {
+func Test_Error_Time(t *testing.T) {
 	// --- Given ---
 	tim := time.Now()
 
@@ -208,10 +203,10 @@ func (ste *ErrorSuite) Test_Error_Time() {
 
 	// --- Then ---
 	exp := fmt.Sprintf(`em0 :: key0=%s`, tim.Format(time.RFC3339Nano))
-	ste.Exactly(exp, err.String())
+	assert.Exactly(t, exp, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_GetTime() {
+func Test_Error_GetTime(t *testing.T) {
 	now := time.Now()
 
 	tt := []struct {
@@ -229,7 +224,7 @@ func (ste *ErrorSuite) Test_Error_GetTime() {
 	}
 
 	for _, tc := range tt {
-		ste.T().Run(tc.testN, func(t *testing.T) {
+		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
 			value, exist := tc.err.GetTime(tc.key)
 
@@ -240,17 +235,17 @@ func (ste *ErrorSuite) Test_Error_GetTime() {
 	}
 }
 
-func (ste *ErrorSuite) Test_Error_Bool() {
+func Test_Error_Bool(t *testing.T) {
 	// --- When ---
 	err0 := Newf("em0").Bool("key0", true)
 	err1 := Newf("em0").Bool("key0", false)
 
 	// --- Then ---
-	ste.Exactly(`em0 :: key0=true`, err0.String())
-	ste.Exactly(`em0 :: key0=false`, err1.String())
+	assert.Exactly(t, `em0 :: key0=true`, err0.String())
+	assert.Exactly(t, `em0 :: key0=false`, err1.String())
 }
 
-func (ste *ErrorSuite) Test_Error_GetBool() {
+func Test_Error_GetBool(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -266,7 +261,7 @@ func (ste *ErrorSuite) Test_Error_GetBool() {
 	}
 
 	for _, tc := range tt {
-		ste.T().Run(tc.testN, func(t *testing.T) {
+		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
 			value, exist := tc.err.GetBool(tc.key)
 
@@ -277,16 +272,16 @@ func (ste *ErrorSuite) Test_Error_GetBool() {
 	}
 }
 
-func (ste *ErrorSuite) Test_Error_Multi_Metadata() {
+func Test_Error_Multi_Metadata(t *testing.T) {
 	// --- When ---
 	err := New("test msg", "ECode").Int("key0", 5).Str("key1", "I'm a string")
 
 	// --- Then ---
-	ste.Exactly("test msg", err.Error())
-	ste.Exactly(`test msg :: code="ECode" key0=5 key1="I'm a string"`, err.String())
+	assert.Exactly(t, "test msg", err.Error())
+	assert.Exactly(t, `test msg :: code="ECode" key0=5 key1="I'm a string"`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_Wrap() {
+func Test_Error_Wrap(t *testing.T) {
 	// --- Given ---
 	e := errors.New("std error")
 
@@ -294,21 +289,21 @@ func (ste *ErrorSuite) Test_Error_Wrap() {
 	err := Wrap(e)
 
 	// --- Then ---
-	ste.IsType(&Error{}, err)
-	ste.False(err.Immutable())
-	ste.Exactly("std error", err.Error())
-	ste.Exactly("std error", err.String())
+	assert.IsType(t, &Error{}, err)
+	assert.False(t, err.Immutable())
+	assert.Exactly(t, "std error", err.Error())
+	assert.Exactly(t, "std error", err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_Wrap_nil() {
+func Test_Error_Wrap_nil(t *testing.T) {
 	// --- When ---
 	err := Wrap(nil)
 
 	// --- Then ---
-	ste.Nil(err)
+	assert.Nil(t, err)
 }
 
-func (ste *ErrorSuite) Test_Error_Wrap_Error() {
+func Test_Error_Wrap_Error(t *testing.T) {
 	// --- Given ---
 	err0 := New("test msg")
 
@@ -316,10 +311,10 @@ func (ste *ErrorSuite) Test_Error_Wrap_Error() {
 	err1 := Wrap(err0)
 
 	// --- Then ---
-	ste.Same(err0, err1)
+	assert.Same(t, err0, err1)
 }
 
-func (ste *ErrorSuite) Test_Error_Unwrap() {
+func Test_Error_Unwrap(t *testing.T) {
 	// --- Given ---
 	err0 := errors.New("std error")
 
@@ -327,10 +322,10 @@ func (ste *ErrorSuite) Test_Error_Unwrap() {
 	err1 := Wrap(err0).Unwrap()
 
 	// --- Then ---
-	ste.Same(err0, err1)
+	assert.Same(t, err0, err1)
 }
 
-func (ste *ErrorSuite) Test_Error_with_immutable() {
+func Test_Error_with_immutable(t *testing.T) {
 	// --- Given ---
 	err0 := Imm("immutable error", "ECode")
 
@@ -338,41 +333,41 @@ func (ste *ErrorSuite) Test_Error_with_immutable() {
 	err1 := err0.Str("key0", "val0")
 
 	// --- Then ---
-	ste.NotSame(err0, err1)
-	ste.False(err1.Immutable())
-	ste.True(err1.HasCode("ECode"))
+	assert.NotSame(t, err0, err1)
+	assert.False(t, err1.Immutable())
+	assert.True(t, err1.HasCode("ECode"))
 
 	val, ok := err1.GetStr("key0")
-	ste.Exactly("val0", val)
-	ste.True(ok)
+	assert.Exactly(t, "val0", val)
+	assert.True(t, ok)
 }
 
-type TestT string
+type implementor string
 
-func (t TestT) ZrrFields(e *Error) *Error {
+func (t implementor) ZrrFields(e *Error) *Error {
 	return e.Str(KCode, string(t)).Int("key1", 123)
 }
 
-func (ste *ErrorSuite) Test_Error_FieldsFrom() {
+func Test_Error_FieldsFrom(t *testing.T) {
 	// --- Given ---
-	t := TestT("test")
+	imp := implementor("test")
 
 	// --- When ---
-	err := New("test msg").FieldsFrom(t)
+	err := New("test msg").FieldsFrom(imp)
 
 	// --- Then ---
-	ste.Exactly(`test msg :: code="test" key1=123`, err.String())
+	assert.Exactly(t, `test msg :: code="test" key1=123`, err.String())
 }
 
-func (ste *ErrorSuite) Test_Error_FieldsFrom_Immutable() {
+func Test_Error_FieldsFrom_Immutable(t *testing.T) {
 	// --- Given ---
 	imm := Imm("test msg", "TCode")
-	t := TestT("test")
+	imp := implementor("test")
 
 	// --- When ---
-	err := imm.FieldsFrom(t)
+	err := imm.FieldsFrom(imp)
 
 	// --- Then ---
-	ste.True(errors.Is(err, imm))
-	ste.Exactly(`test msg :: code="test" key1=123`, err.String())
+	assert.True(t, errors.Is(err, imm))
+	assert.Exactly(t, `test msg :: code="test" key1=123`, err.String())
 }

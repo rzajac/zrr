@@ -13,6 +13,7 @@ package zrr
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -177,4 +178,22 @@ func (e *Error) String() string {
 	}
 
 	return msg + div + strings.Join(parts, " ")
+}
+
+// OnlyMessage returns error message without key value pairs.
+func OnlyMessage(err error) string {
+	if isNil(err) {
+		return ""
+	}
+	msg := err.Error()
+	if i := strings.Index(msg, " :: "); i != -1 {
+		msg = msg[:i]
+	}
+	return msg
+}
+
+// isNil returns true if a is nil or a is nil interface.
+func isNil(a interface{}) bool {
+	defer func() { recover() }()
+	return a == nil || reflect.ValueOf(a).IsNil()
 }

@@ -206,3 +206,27 @@ func Test_Error_FieldsFrom_Immutable(t *testing.T) {
 	assert.True(t, errors.Is(err, imm))
 	assert.Exactly(t, `test msg :: code="test" key1=123`, err.Error())
 }
+
+func Test_OnlyMessage(t *testing.T) {
+	var nilErr *Error
+
+	tt := []struct {
+		testN string
+
+		exp string
+		err error
+	}{
+		{"1", "message", New("message", "ECode")},
+		{"2", "message", New("message")},
+		{"3", "message", errors.New("message")},
+		{"4", "message", New("message").Str("key0", "val0")},
+		{"5", "", nil},
+		{"6", "", nilErr},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			assert.Exactly(t, tc.exp, OnlyMessage(tc.err), "test %s", tc.testN)
+		})
+	}
+}

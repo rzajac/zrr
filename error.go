@@ -80,14 +80,21 @@ func base(err error, imm bool) *Error {
 func (e *Error) Immutable() bool { return e.imm }
 
 // Error implements error interface.
-func (e *Error) Error() string { return e.error.Error() }
+func (e *Error) Error() string { return e.String() }
 
 // String implements fmt.Stringer interface.
 //
 // The returned key value pairs will be in alphabetical order:
 // `error message :: aaa=123 bbb="string value" ccc=true`.
 func (e *Error) String() string {
-	msg := e.error.Error()
+	var msg string
+	var w *Error
+	if errors.As(e.error, &w) {
+		msg = w.error.Error()
+	} else {
+		msg = e.error.Error()
+	}
+
 	if len(e.meta) == 0 {
 		return msg
 	}

@@ -15,7 +15,7 @@ func Test_Error_New(t *testing.T) {
 
 	// --- Then ---
 	assert.False(t, err.Immutable())
-	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, `em0 :: code="ECode"`, err.Error())
 	assert.Exactly(t, `em0 :: code="ECode"`, err.String())
 	assert.True(t, err.HasCode("ECode"))
 }
@@ -54,7 +54,7 @@ func Test_Error_Imm_WithCode(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, err.Immutable())
-	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, `em0 :: code="ECode"`, err.Error())
 	assert.Exactly(t, `em0 :: code="ECode"`, err.String())
 }
 
@@ -64,7 +64,7 @@ func Test_Error_Imm_WithCodes(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, err.Immutable())
-	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, `em0 :: code="ECode0"`, err.Error())
 	assert.Exactly(t, `em0 :: code="ECode0"`, err.String())
 }
 
@@ -277,7 +277,7 @@ func Test_Error_Multi_Metadata(t *testing.T) {
 	err := New("test msg", "ECode").Int("key0", 5).Str("key1", "I'm a string")
 
 	// --- Then ---
-	assert.Exactly(t, "test msg", err.Error())
+	assert.Exactly(t, `test msg :: code="ECode" key0=5 key1="I'm a string"`, err.Error())
 	assert.Exactly(t, `test msg :: code="ECode" key0=5 key1="I'm a string"`, err.String())
 }
 

@@ -5,9 +5,9 @@ import (
 	"fmt"
 )
 
-func ExampleError_String() {
+func ExampleError_Error() {
 	err := Wrap(errors.New("std error")).Str("place", "here").Int("retry", 5)
-	fmt.Println(err.String())
+	fmt.Println(err.Error())
 
 	// Output: std error :: place="here" retry=5
 }

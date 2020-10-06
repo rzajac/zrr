@@ -22,6 +22,9 @@ import (
 // KCode represents key name for storing error code.
 const KCode = "code"
 
+// MsgSep represents the separator between error message and key value pairs.
+const MsgSep = " :: "
+
 // Wrap wraps error in Error instance. It returns nil if err is nil.
 func Wrap(err error) *Error {
 	if err == nil {
@@ -83,7 +86,13 @@ func base(err error, imm bool) *Error {
 }
 
 // Error implements error interface.
-func (e *Error) Error() string { return e.String() }
+//
+// The returned key value pairs will be in alphabetical order:
+// `error message :: aaa=123 bbb="string value" ccc=true`.
+func (e *Error) Error() string { return e.msg(true) }
+
+// Msg returns error message without key value pairs.
+func (e *Error) Msg() string { return e.msg(false) }
 
 // Code adds the key KCode with string val to the *Error metadata.
 func (e *Error) Code(c string) *Error { return e.with(KCode, c) }
@@ -136,11 +145,9 @@ func (e *Error) with(key string, v interface{}) *Error {
 // Unwrap unwraps original error.
 func (e *Error) Unwrap() error { return e.error }
 
-// String implements fmt.Stringer interface.
-//
-// The returned key value pairs will be in alphabetical order:
-// `error message :: aaa=123 bbb="string value" ccc=true`.
-func (e *Error) String() string {
+// msg constructs error message. If meta is set to false it will return only
+// error message without metadata.
+func (e *Error) msg(meta bool) string {
 	var msg string
 	var w *Error
 	if errors.As(e.error, &w) {
@@ -149,16 +156,19 @@ func (e *Error) String() string {
 		msg = e.error.Error()
 	}
 
-	if len(e.meta) == 0 {
+	// Return only error message.
+	if len(e.meta) == 0 || !meta {
 		return msg
 	}
 
+	// Sort metadata keys.
 	keys := make([]string, 0, len(e.meta))
 	for fn := range e.meta {
 		keys = append(keys, fn)
 	}
 	sort.Strings(keys)
 
+	// Construct metadata based on sorted keys.
 	parts := make([]string, 0, len(e.meta))
 	for _, fn := range keys {
 		val := e.meta[fn]
@@ -172,23 +182,10 @@ func (e *Error) String() string {
 		parts = append(parts, fn+"="+fmt.Sprintf("%v", val))
 	}
 
-	div := " "
 	if len(parts) > 0 {
-		div = " :: "
+		return msg + MsgSep + strings.Join(parts, " ")
 	}
 
-	return msg + div + strings.Join(parts, " ")
-}
-
-// OnlyMessage returns error message without key value pairs.
-func OnlyMessage(err error) string {
-	if isNil(err) {
-		return ""
-	}
-	msg := err.Error()
-	if i := strings.Index(msg, " :: "); i != -1 {
-		msg = msg[:i]
-	}
 	return msg
 }
 

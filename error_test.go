@@ -207,26 +207,21 @@ func Test_Error_FieldsFrom_Immutable(t *testing.T) {
 	assert.Exactly(t, `test msg :: code="test" key1=123`, err.Error())
 }
 
-func Test_OnlyMessage(t *testing.T) {
-	var nilErr *Error
-
+func Test_Error_Msg(t *testing.T) {
 	tt := []struct {
 		testN string
 
 		exp string
-		err error
+		err *Error
 	}{
 		{"1", "message", New("message", "ECode")},
 		{"2", "message", New("message")},
-		{"3", "message", errors.New("message")},
-		{"4", "message", New("message").Str("key0", "val0")},
-		{"5", "", nil},
-		{"6", "", nilErr},
+		{"3", "message", New("message").Str("key0", "val0")},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, OnlyMessage(tc.err), "test %s", tc.testN)
+			assert.Exactly(t, tc.exp, tc.err.Msg(), "test %s", tc.testN)
 		})
 	}
 }

@@ -24,7 +24,7 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 		return
 	}
 
-	got := zrr.OnlyMessage(E.Unwrap())
+	got := E.Unwrap().Error()
 	if got != cause {
 		t.Errorf("expected cause '%s' but got '%s'", cause, got)
 		return

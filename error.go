@@ -192,6 +192,10 @@ func (e *Error) msg(meta bool) string {
 	return msg
 }
 
+// Fields returns metadata iterator. Caller must not hold to the iterator
+// longer then it is necessary to loop over metadata key-value pairs.
+func (e *Error) Fields() *iter { return newIter(e) }
+
 // isNil returns true if a is nil or a is nil interface.
 func isNil(a interface{}) bool {
 	defer func() { recover() }()

@@ -31,6 +31,22 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 	}
 }
 
+// AssertContains asserts err is instance of zrr.Error and has error message
+// which contains cause string.
+func AssertContains(t *testing.T, err error, cause string, args ...interface{}) {
+	t.Helper()
+	args = mArgs(args...)
+
+	E, ok := err.(*zrr.Error)
+	if !ok {
+		t.Error("expected err to ne instance of zrr.Error")
+		return
+	}
+
+	got := E.Unwrap().Error()
+	assert.Contains(t, got, cause)
+}
+
 // AssertCode asserts err is instance of zrr.Error and has error code exp.
 func AssertCode(t *testing.T, err error, exp string, args ...interface{}) {
 	t.Helper()

@@ -215,7 +215,7 @@ func Test_Error_FieldsFrom_Immutable(t *testing.T) {
 	assert.Exactly(t, `test msg :: code="test" key1=123`, err.Error())
 }
 
-func Test_Error_Msg(t *testing.T) {
+func Test_Error_Cause(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -229,7 +229,7 @@ func Test_Error_Msg(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, tc.err.Msg(), "test %s", tc.testN)
+			assert.Exactly(t, tc.exp, tc.err.Cause(), "test %s", tc.testN)
 		})
 	}
 }

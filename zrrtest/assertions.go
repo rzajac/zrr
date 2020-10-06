@@ -24,15 +24,15 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 		return
 	}
 
-	got := E.Msg()
+	got := E.Cause()
 	if got != cause {
 		t.Errorf("expected cause '%s' but got '%s'", cause, got)
 		return
 	}
 }
 
-// AssertContains asserts err is instance of zrr.Error and has error message
-// which contains cause string.
+// AssertContains asserts err is instance of zrr.Error and has error
+// message (without key value pairs) which contains cause string.
 func AssertContains(t *testing.T, err error, cause string, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
@@ -43,7 +43,7 @@ func AssertContains(t *testing.T, err error, cause string, args ...interface{}) 
 		return
 	}
 
-	got := E.Unwrap().Error()
+	got := E.Cause()
 	assert.Contains(t, got, cause)
 }
 
@@ -55,7 +55,7 @@ func AssertCode(t *testing.T, err error, exp string, args ...interface{}) {
 }
 
 // AssertEqual asserts err and got are instance of zrr.Error and their error
-// messages are equal.
+// messages (with key value pairs) are equal.
 func AssertEqual(t *testing.T, exp, got error, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
@@ -91,6 +91,16 @@ func AssertInt(t *testing.T, err error, key string, exp int, args ...interface{}
 	args = mArgs(args...)
 
 	got, ok := zrr.GetInt(err, key)
+	require.True(t, ok, "expected key '%s' is present", key)
+	assert.Exactly(t, exp, got, "expected %s=%d got %s=%d", key, exp, key, got)
+}
+
+// AssertInt64 asserts err is instance of zrr.Error and has key with value exp.
+func AssertInt64(t *testing.T, err error, key string, exp int64, args ...interface{}) {
+	t.Helper()
+	args = mArgs(args...)
+
+	got, ok := zrr.GetInt64(err, key)
 	require.True(t, ok, "expected key '%s' is present", key)
 	assert.Exactly(t, exp, got, "expected %s=%d got %s=%d", key, exp, key, got)
 }

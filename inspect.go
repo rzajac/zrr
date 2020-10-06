@@ -71,6 +71,20 @@ func GetInt(err error, key string) (int, bool) {
 	return 0, false
 }
 
+// GetInt64 returns the key as an int64 if err is an instance of Error and key
+// exists. If key does not exist or it's not an int64 it will return
+// false as the second return value.
+func GetInt64(err error, key string) (int64, bool) {
+	if err, ok := err.(*Error); ok && err != nil {
+		if val, ok := err.meta[key]; ok {
+			if ret, ok := val.(int64); ok {
+				return ret, true
+			}
+		}
+	}
+	return 0, false
+}
+
 // GetFloat64 returns the key as a float64 if err is an instance of Error
 // and key exists. If key does not exist or it's not a float64 it will return
 // false as the second return value.

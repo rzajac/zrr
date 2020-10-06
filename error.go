@@ -91,8 +91,8 @@ func base(err error, imm bool) *Error {
 // `error message :: aaa=123 bbb="string value" ccc=true`.
 func (e *Error) Error() string { return e.msg(true) }
 
-// Msg returns error message without key value pairs.
-func (e *Error) Msg() string { return e.msg(false) }
+// Cause returns error message without key value pairs.
+func (e *Error) Cause() string { return e.msg(false) }
 
 // Code adds the key KCode with string val to the *Error metadata.
 func (e *Error) Code(c string) *Error { return e.with(KCode, c) }

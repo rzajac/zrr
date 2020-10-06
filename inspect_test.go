@@ -148,6 +148,35 @@ func Test_GetInt(t *testing.T) {
 	}
 }
 
+func Test_GetInt64(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		err   error
+		key   string
+		value int64
+		exist bool
+	}{
+		{"1", New("em0"), "key0", 0, false},
+		{"2", New("em0").Int64("key0", 0), "key0", 0, true},
+		{"3", New("em0").Int64("key0", 123), "key0", 123, true},
+		{"4", New("em0").Int("key0", 123), "key0", 0, false},
+		{"5", New("em0").Str("key0", "val0"), "key0", 0, false},
+		{"6", nil, "key0", 0, false},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			value, exist := GetInt64(tc.err, tc.key)
+
+			// --- Then ---
+			assert.Exactly(t, tc.exist, exist, "test %s", tc.testN)
+			assert.Exactly(t, tc.value, value, "test %s", tc.testN)
+		})
+	}
+}
+
 func Test_GetFloat64(t *testing.T) {
 	tt := []struct {
 		testN string

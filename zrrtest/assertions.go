@@ -20,7 +20,7 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 
 	E, ok := err.(*zrr.Error)
 	if !ok {
-		t.Error("expected err to ne instance of zrr.Error")
+		t.Error("expected err to be instance of zrr.Error")
 		return
 	}
 

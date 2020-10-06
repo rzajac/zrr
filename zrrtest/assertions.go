@@ -12,8 +12,8 @@ import (
 	"github.com/rzajac/zrr"
 )
 
-// AssertCause asserts err is instance of zrr.Error and has error message
-// equal to cause.
+// AssertCause asserts err is instance of zrr.Error and has error
+// message (without key value pairs) equal to cause.
 func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
@@ -24,7 +24,7 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 		return
 	}
 
-	got := E.Unwrap().Error()
+	got := E.Msg()
 	if got != cause {
 		t.Errorf("expected cause '%s' but got '%s'", cause, got)
 		return

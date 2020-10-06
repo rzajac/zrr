@@ -71,6 +71,26 @@ func Test_HasCode(t *testing.T) {
 	}
 }
 
+func Test_GetCode(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		exp string
+		err error
+	}{
+		{"1", "", New("em0")},
+		{"2", "ECode", New("em0", "ECode")},
+		{"3", "", errors.New("message")},
+		{"4", "", nil},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			assert.Exactly(t, tc.exp, GetCode(tc.err), "test %s", tc.testN)
+		})
+	}
+}
+
 func Test_GetStr(t *testing.T) {
 	tt := []struct {
 		testN string

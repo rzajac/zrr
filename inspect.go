@@ -32,6 +32,13 @@ func HasCode(err error, code string) bool {
 	return false
 }
 
+// GetCode returns error code if error err is instance of Error.
+// If error code is not set it will return empty string.
+func GetCode(err error) string {
+	code, _ := GetStr(err, KCode)
+	return code
+}
+
 // GetStr returns the key as a string if err is an instance of Error and key
 // exists. If key does not exist or it's not a string it will return
 // false as the second return value.

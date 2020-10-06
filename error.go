@@ -104,7 +104,7 @@ func (e *Error) Str(key string, s string) *Error { return e.with(key, s) }
 func (e *Error) Int(key string, i int) *Error { return e.with(key, i) }
 
 // Int64 adds the key with int64 val to the *Error metadata.
-func (e *Error) Int64(key string, i int) *Error { return e.with(key, i) }
+func (e *Error) Int64(key string, i int64) *Error { return e.with(key, i) }
 
 // Float64 adds the key with float64 val to the *Error metadata.
 func (e *Error) Float64(key string, f float64) *Error { return e.with(key, f) }

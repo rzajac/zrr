@@ -22,11 +22,15 @@ func HasKey(err error, key string) bool {
 }
 
 // HasCode returns true if error err is instance of Error and has key KCode
-// which equals to code.
-func HasCode(err error, code string) bool {
+// which equals to one of the codes.
+func HasCode(err error, codes ...string) bool {
 	if err, ok := err.(*Error); ok && err != nil {
 		if val, ok := err.meta[KCode]; ok {
-			return val == code
+			for _, code := range codes {
+				if code == val {
+					return true
+				}
+			}
 		}
 	}
 	return false

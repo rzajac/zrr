@@ -55,18 +55,19 @@ func Test_HasCode(t *testing.T) {
 		testN string
 
 		exp  bool
-		code string
+		code []string
 		err  error
 	}{
-		{"1", true, "ECode", New("em0", "ECode")},
-		{"2", false, "ECodeX", New("em0", "ECode")},
-		{"3", false, "ECode", errors.New("message")},
-		{"4", false, "ECode", nil},
+		{"1", true, []string{"ECode"}, New("em0", "ECode")},
+		{"2", true, []string{"ECodeX", "ECode"}, New("em0", "ECode")},
+		{"3", false, []string{"ECodeX"}, New("em0", "ECode")},
+		{"4", false, []string{"ECode"}, errors.New("message")},
+		{"5", false, []string{"ECode"}, nil},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, HasCode(tc.err, tc.code), "test %s", tc.testN)
+			assert.Exactly(t, tc.exp, HasCode(tc.err, tc.code...), "test %s", tc.testN)
 		})
 	}
 }

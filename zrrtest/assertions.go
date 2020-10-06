@@ -39,7 +39,7 @@ func AssertContains(t *testing.T, err error, cause string, args ...interface{}) 
 
 	E, ok := err.(*zrr.Error)
 	if !ok {
-		t.Error("expected err to ne instance of zrr.Error")
+		t.Error("expected err to be instance of zrr.Error")
 		return
 	}
 
@@ -52,6 +52,27 @@ func AssertCode(t *testing.T, err error, exp string, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
 	AssertStr(t, err, zrr.KCode, exp)
+}
+
+// AssertEqual asserts err and got are instance of zrr.Error and their error
+// messages are equal.
+func AssertEqual(t *testing.T, exp, got error, args ...interface{}) {
+	t.Helper()
+	args = mArgs(args...)
+
+	expE, ok := exp.(*zrr.Error)
+	if !ok {
+		t.Error("expected exp to be instance of zrr.Error")
+		return
+	}
+
+	gotE, ok := got.(*zrr.Error)
+	if !ok {
+		t.Error("expected got to be instance of zrr.Error")
+		return
+	}
+
+	assert.Exactly(t, expE.Error(), gotE.Error())
 }
 
 // AssertStr asserts err is instance of zrr.Error and has key with value exp.

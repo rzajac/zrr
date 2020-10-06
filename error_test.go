@@ -79,6 +79,14 @@ func Test_Error_Int(t *testing.T) {
 	assert.Exactly(t, `em0 :: key0=0`, err.Error())
 }
 
+func Test_Error_Int64(t *testing.T) {
+	// --- When ---
+	err := Newf("em0").Int64("key0", 1234)
+
+	// --- Then ---
+	assert.Exactly(t, `em0 :: key0=1234`, err.Error())
+}
+
 func Test_Error_Float64(t *testing.T) {
 	// --- When ---
 	err := Newf("em0").Float64("key0", 0.123)

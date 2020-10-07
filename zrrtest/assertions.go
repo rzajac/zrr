@@ -18,6 +18,7 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	E, ok := err.(*zrr.Error)
 	if !ok {
 		t.Error("expected err to be instance of zrr.Error")
@@ -37,6 +38,7 @@ func AssertContains(t *testing.T, err error, cause string, args ...interface{}) 
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	E, ok := err.(*zrr.Error)
 	if !ok {
 		t.Error("expected err to be instance of zrr.Error")
@@ -51,6 +53,7 @@ func AssertContains(t *testing.T, err error, cause string, args ...interface{}) 
 func AssertCode(t *testing.T, err error, exp string, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
+	require.NotNil(t, err, m("err=nil", args...))
 	AssertStr(t, err, zrr.KCode, exp)
 }
 
@@ -60,6 +63,8 @@ func AssertEqual(t *testing.T, exp, got error, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, exp, m("exp=nil", args...))
+	require.NotNil(t, got, m("got=nil", args...))
 	expE, ok := exp.(*zrr.Error)
 	if !ok {
 		t.Error("expected exp to be instance of zrr.Error")
@@ -80,6 +85,7 @@ func AssertStr(t *testing.T, err error, key, exp string, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	got, ok := zrr.GetStr(err, key)
 	require.True(t, ok, "expected key '%s' is present", key)
 	assert.Exactly(t, exp, got, "expected %s='%s' got %s='%s'", key, exp, key, got)
@@ -90,6 +96,7 @@ func AssertInt(t *testing.T, err error, key string, exp int, args ...interface{}
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	got, ok := zrr.GetInt(err, key)
 	require.True(t, ok, "expected key '%s' is present", key)
 	assert.Exactly(t, exp, got, "expected %s=%d got %s=%d", key, exp, key, got)
@@ -100,6 +107,7 @@ func AssertInt64(t *testing.T, err error, key string, exp int64, args ...interfa
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	got, ok := zrr.GetInt64(err, key)
 	require.True(t, ok, "expected key '%s' is present", key)
 	assert.Exactly(t, exp, got, "expected %s=%d got %s=%d", key, exp, key, got)
@@ -110,6 +118,7 @@ func AssertFloat64(t *testing.T, err error, key string, exp float64, args ...int
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	got, ok := zrr.GetFloat64(err, key)
 	require.True(t, ok, "expected key '%s' is present", key)
 	assert.Exactly(t, exp, got, "expected %s=%f got %s=%f", key, exp, key, got)
@@ -120,6 +129,7 @@ func AssertTime(t *testing.T, err error, key string, exp time.Time, args ...inte
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	got, ok := zrr.GetTime(err, key)
 	require.True(t, ok, "expected key '%s' is present", key)
 	assert.Exactly(t, exp, got, "expected %s='%s' got %s='%s'", key, exp, key, got)
@@ -130,9 +140,19 @@ func AssertBool(t *testing.T, err error, key string, exp bool, args ...interface
 	t.Helper()
 	args = mArgs(args...)
 
+	require.NotNil(t, err, m("err=nil", args...))
 	got, ok := zrr.GetBool(err, key)
 	require.True(t, ok, "expected key '%s' is present", key)
 	assert.Exactly(t, exp, got, "expected %s=%v got %s=%v", key, exp, key, got)
+}
+
+// m builds and returns assertion message with prefix name.
+func m(name string, args ...interface{}) string {
+	msg := msg(args...)
+	if msg != "" {
+		name = "." + name
+	}
+	return msg + name
 }
 
 // msg builds and returns assertion message.

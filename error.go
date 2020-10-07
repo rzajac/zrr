@@ -129,6 +129,14 @@ func (e *Error) FieldsFrom(src Fielder) *Error {
 	return src.ZrrFields(e)
 }
 
+// ZrrFields implements Fielder interface.
+func (e *Error) ZrrFields(err *Error) *Error {
+	for k, v := range e.meta {
+		_ = err.with(k, v)
+	}
+	return err
+}
+
 // with adds context to the error.
 func (e *Error) with(key string, v interface{}) *Error {
 	// Handle immutable error.

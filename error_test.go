@@ -233,3 +233,15 @@ func Test_Error_Cause(t *testing.T) {
 		})
 	}
 }
+
+func Test_Error_ZrrFields(t *testing.T) {
+	// --- Given ---
+	err0 := New("test msg").Str("key0", "val0").Int("key1", 1)
+
+	// --- When ---
+	err1 := Wrap(err0.Unwrap()).FieldsFrom(err0)
+
+	// --- Then ---
+	assert.Exactly(t, err0.Error(), err1.Error())
+	assert.Same(t, err0.Unwrap(), err1.Unwrap())
+}

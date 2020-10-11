@@ -1,7 +1,7 @@
 # Errors with metadata
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/rzajac/zrr)](https://goreportcard.com/report/github.com/rzajac/zrr)
-[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://goreportcard.com/report/github.com/rzajac/zrr)
+[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://pkg.go.dev/github.com/rzajac/zrr)
 
 The package `zrr` provides a way to add and inspect type safe error context.  
 

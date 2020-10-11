@@ -1,12 +1,7 @@
-// Package zrr provides errors with metadata as key value pairs.
+// Package zrr provides a way to add and inspect type safe error context.
 //
-// The errors.Wrap function returns a new error to which we can add metadata.
-// For example
-//
-//     _, err := ioutil.ReadAll(r)
-//     if err != nil {
-//             return zrr.Wrap(err).Str("origin", "67b75223ad8c2183")
-//     }
+// The error context might be useful for example when logging errors which were
+// created in some deeper parts of your code.
 //
 package zrr
 
@@ -19,13 +14,13 @@ import (
 	"time"
 )
 
-// KCode represents key name for storing error code.
-const KCode = "code"
+// KCode represents the key name used for error code.
+const KCode = "zrr_code"
 
-// MsgSep represents the separator between error message and key value pairs.
+// MsgSep is the separator between error message and key value pairs.
 const MsgSep = " :: "
 
-// Wrap wraps error in Error instance. It returns nil if err is nil.
+// Wrap wraps err in Error instance. It returns nil if err is nil.
 func Wrap(err error) *Error {
 	if err == nil {
 		return nil
@@ -85,34 +80,32 @@ func base(err error, imm bool) *Error {
 	}
 }
 
-// Error implements error interface.
-//
-// The returned key value pairs will be in alphabetical order:
-// `error message :: aaa=123 bbb="string value" ccc=true`.
+// Error implements error interface and returns error message and key value
+// pairs associated with it separated by MsgSep.
 func (e *Error) Error() string { return e.msg(true) }
 
 // Cause returns error message without key value pairs.
 func (e *Error) Cause() string { return e.msg(false) }
 
-// Code adds the key KCode with string val to the *Error metadata.
+// Code adds error code to the error.
 func (e *Error) Code(c string) *Error { return e.with(KCode, c) }
 
-// Str adds the key with string val to the *Error metadata.
+// Str adds the key with string val to the error.
 func (e *Error) Str(key string, s string) *Error { return e.with(key, s) }
 
-// Int adds the key with integer val to the *Error metadata.
+// Int adds the key with integer val to the error.
 func (e *Error) Int(key string, i int) *Error { return e.with(key, i) }
 
-// Int64 adds the key with int64 val to the *Error metadata.
+// Int64 adds the key with int64 val to the error.
 func (e *Error) Int64(key string, i int64) *Error { return e.with(key, i) }
 
-// Float64 adds the key with float64 val to the *Error metadata.
+// Float64 adds the key with float64 val to the error.
 func (e *Error) Float64(key string, f float64) *Error { return e.with(key, f) }
 
-// Time adds the key with val as a time to the *Error metadata.
+// Time adds the key with val as a time to the error.
 func (e *Error) Time(key string, t time.Time) *Error { return e.with(key, t) }
 
-// Bool adds the key with val as a boolean to the *Error metadata.
+// Bool adds the key with val as a boolean to the error.
 func (e *Error) Bool(key string, b bool) *Error { return e.with(key, b) }
 
 // FieldsFrom set fields from src.

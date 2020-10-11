@@ -1,28 +1,37 @@
-# zrr
+# Errors with metadata
 
-Package `zrr` gives ability to add key value pair metadata to errors. 
+[![Go Report Card](https://goreportcard.com/badge/github.com/rzajac/zrr)](https://goreportcard.com/report/github.com/rzajac/zrr)
+[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://goreportcard.com/report/github.com/rzajac/zrr)
 
-# Installing
+The package `zrr` provides a way to add and inspect type safe error context.  
 
 ```
 go get github.com/rzajac/zrr
 ```
 
-# Adding metadata
+# When is it useful?
+
+The error context might be useful for example when logging errors which were 
+created in some deeper parts of your code.   
+ 
+# Examples
 
 ```
-err := zrr.Wrap(errors.New("std error")).
-    Code("ECode").
-    Str("str", "here").
-    Int("int", 5).
-    Float64("float64", 1.23).
-    Time("time", time.Date(2020, time.October, 7, 23, 47, 0, 0, time.UTC)).
-    Bool("bool", true)
+if err := somepackage.DoStuff(); err != nil {
+    err = zrr.Wrap(err).
+        Code("ECode").
+        Str("str", "here").
+        Int("int", 5).
+        Float64("float64", 1.23).
+        Time("time", time.Date(2020, time.October, 7, 23, 47, 0, 0, time.UTC)).
+        Bool("bool", true)
+    return err
+}
 
 fmt.Println(err.Error()) // std error :: bool=true code="ECode" float64=1.23 int=5 str="here" time=2020-10-07T23:47:00Z
 ```
 
-# Inspecting metadata 
+# Inspecting error metadata 
 
 ```
 err := zrr.New("message", "ECode").Int("retry", 5)

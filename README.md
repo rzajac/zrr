@@ -31,6 +31,8 @@ if err := somepackage.DoStuff(); err != nil {
 fmt.Println(err.Error()) // std error :: bool=true code="ECode" float64=1.23 int=5 str="here" time=2020-10-07T23:47:00Z
 ```
 
+For more examples visit [pkg.go.dev](https://pkg.go.dev/mod/github.com/rzajac/zrr).
+
 # Inspecting error metadata 
 
 ```

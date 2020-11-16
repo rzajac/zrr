@@ -37,8 +37,8 @@ func ExampleGetInt() {
 	fmt.Println(zrr.GetInt(err, "not_set"))
 
 	// Output:
-	// true
-	// false
+	// 5 true
+	// 0 false
 }
 
 func ExampleHasKey() {
@@ -84,10 +84,11 @@ func ExampleError_Fields() {
 		fmt.Printf("%s = %v\n", key, val)
 	}
 
-	// Output: bool = true
+	// Output:
+	// bool = true
+	// code = ECode
 	// float64 = 1.23
 	// int = 5
 	// str = string
 	// time = 2020-10-07 23:47:00 +0000 UTC
-	// zrr_code = ECode
 }

@@ -15,7 +15,7 @@ import (
 )
 
 // KCode represents the key name used for error code.
-const KCode = "zrr_code"
+const KCode = "code"
 
 // MsgSep is the separator between error message and key value pairs.
 const MsgSep = " :: "

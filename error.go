@@ -60,8 +60,12 @@ func Newf(msg string, args ...interface{}) *Error {
 }
 
 // Imm is a constructor returning new immutable Error instance.
-// Usually used for package level errors. Error code is optional, if more
-// then one code is provided the first one will be used.
+//
+// Immutable error instances are never changed when adding / changing fields.
+// They are are good choice for package level errors.
+//
+// Error code is optional, if more then one code is provided the first
+// one will be used.
 func Imm(msg string, code ...string) *Error {
 	e := base(errors.New(msg), true)
 	e.imm = true

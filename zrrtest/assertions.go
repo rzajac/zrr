@@ -80,6 +80,15 @@ func AssertEqual(t *testing.T, exp, got error, args ...interface{}) {
 	assert.Exactly(t, expE.Error(), gotE.Error())
 }
 
+// AssertNoKey asserts err is instance of zrr.Error and has no key set.
+func AssertNoKey(t *testing.T, err error, key string, args ...interface{}) {
+	t.Helper()
+	args = mArgs(args...)
+
+	require.NotNil(t, err, m("err=nil", args...))
+	require.False(t, zrr.HasKey(err, key), "expected no key '%s'", key)
+}
+
 // AssertStr asserts err is instance of zrr.Error and has key with value exp.
 func AssertStr(t *testing.T, err error, key, exp string, args ...interface{}) {
 	t.Helper()

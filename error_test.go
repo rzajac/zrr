@@ -71,6 +71,30 @@ func Test_Error_Str(t *testing.T) {
 	assert.Exactly(t, `em0 :: key0="val0"`, err.Error())
 }
 
+func Test_Error_StrAppend_append(t *testing.T) {
+	// --- When ---
+	err := Newf("em0").Str("key0", "val0").StrAppend("key0", "1")
+
+	// --- Then ---
+	assert.Exactly(t, `em0 :: key0="val0;1"`, err.Error())
+}
+
+func Test_Error_StrAppend_create(t *testing.T) {
+	// --- When ---
+	err := Newf("em0").StrAppend("key0", "val1")
+
+	// --- Then ---
+	assert.Exactly(t, `em0 :: key0="val1"`, err.Error())
+}
+
+func Test_Error_StrAppend_overrideNonString(t *testing.T) {
+	// --- When ---
+	err := Newf("em0").Int("key0", 1).StrAppend("key0", "val1")
+
+	// --- Then ---
+	assert.Exactly(t, `em0 :: key0="val1"`, err.Error())
+}
+
 func Test_Error_Int(t *testing.T) {
 	// --- When ---
 	err := Newf("em0").Int("key0", 0)

@@ -97,6 +97,18 @@ func (e *Error) Code(c string) *Error { return e.with(KCode, c) }
 // Str adds the key with string val to the error.
 func (e *Error) Str(key string, s string) *Error { return e.with(key, s) }
 
+// StrAppend appends the string s (prefixed with semicolon) to the string
+// represented by key k. If the key does not exist it will be added. If the
+// key already exists and is not a string the old key will be overwritten.
+func (e *Error) StrAppend(key string, s string) *Error {
+	if si, ok := e.meta[key]; ok {
+		if ss, ok := si.(string); ok {
+			s = ss + ";" + s
+		}
+	}
+	return e.with(key, s)
+}
+
 // Int adds the key with integer val to the error.
 func (e *Error) Int(key string, i int) *Error { return e.with(key, i) }
 

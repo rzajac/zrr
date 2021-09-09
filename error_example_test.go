@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleError() {
-	// Create an error and add bunch of context fields to it.
+	// Create an error and add a bunch of context fields to it.
 	err := zrr.Wrap(errors.New("std error")).
 		Code("ECode").
 		Str("str", "string").

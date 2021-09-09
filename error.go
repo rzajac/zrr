@@ -62,9 +62,9 @@ func Newf(msg string, args ...interface{}) *Error {
 // Imm is a constructor returning new immutable Error instance.
 //
 // Immutable error instances are never changed when adding / changing fields.
-// They are are good choice for package level errors.
+// They are good choice for package level errors.
 //
-// Error code is optional, if more then one code is provided the first
+// Error code is optional, if more than one code is provided the first
 // one will be used.
 func Imm(msg string, code ...string) *Error {
 	e := base(errors.New(msg), true)
@@ -98,7 +98,7 @@ func (e *Error) Code(c string) *Error { return e.with(KCode, c) }
 func (e *Error) Str(key string, s string) *Error { return e.with(key, s) }
 
 // StrAppend appends the string s (prefixed with semicolon) to the string
-// represented by key k. If the key does not exist it will be added. If the
+// represented by key k. The key will be added if it doesn't exist. If the
 // key already exists and is not a string the old key will be overwritten.
 func (e *Error) StrAppend(key string, s string) *Error {
 	if si, ok := e.meta[key]; ok {
@@ -165,8 +165,8 @@ func (e *Error) with(key string, v interface{}) *Error {
 // Unwrap unwraps original error.
 func (e *Error) Unwrap() error { return e.error }
 
-// msg constructs error message. If meta is set to false it will return only
-// error message without metadata.
+// msg constructs error message. It will return error message without metadata
+// if the meta is false.
 func (e *Error) msg(meta bool) string {
 	var msg string
 	var w *Error

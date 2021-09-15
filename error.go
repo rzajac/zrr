@@ -213,8 +213,13 @@ func (e *Error) msg(meta bool) string {
 // longer then it is necessary to loop over metadata key-value pairs.
 func (e *Error) Fields() *iter { return newIter(e) }
 
-// isNil returns true if a is nil or a is nil interface.
-func isNil(a interface{}) bool {
+// Meta returns error metadata. The returned map must be treated as read-only.
+func (e *Error) Meta() map[string]interface{} {
+	return e.meta
+}
+
+// isNil returns true if v is nil or v is nil interface.
+func isNil(v interface{}) bool {
 	defer func() { recover() }()
-	return a == nil || reflect.ValueOf(a).IsNil()
+	return v == nil || reflect.ValueOf(v).IsNil()
 }

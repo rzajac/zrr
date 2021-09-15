@@ -209,6 +209,21 @@ func Test_Error_with_immutable(t *testing.T) {
 	assert.True(t, ok)
 }
 
+func Test_Error_Meta(t *testing.T) {
+	// --- Given ---
+	err0 := Imm("immutable error", "ECode").Int("key", 123)
+
+	// --- When ---
+	got := err0.Meta()
+
+	// --- Then ---
+	exp := map[string]interface{}{
+		KCode: "ECode",
+		"key": 123,
+	}
+	assert.Exactly(t, exp, got)
+}
+
 type implementor string
 
 func (t implementor) ZrrFields(e *Error) *Error {

@@ -1,13 +1,15 @@
 package zrr
 
 import (
+	"errors"
 	"time"
 )
 
 // IsImmutable returns true if error err is instance of Error and is immutable.
 func IsImmutable(err error) bool {
-	if err, ok := err.(*Error); ok && err != nil {
-		return err.imm
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		return e.imm
 	}
 	return false
 }
@@ -24,8 +26,9 @@ func HasKey(err error, key string) bool {
 // HasCode returns true if error err is instance of Error and has key KCode
 // which equals to one of the codes.
 func HasCode(err error, codes ...string) bool {
-	if err, ok := err.(*Error); ok && err != nil {
-		if val, ok := err.meta[KCode]; ok {
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		if val, ok := e.meta[KCode]; ok {
 			for _, code := range codes {
 				if code == val {
 					return true
@@ -44,11 +47,12 @@ func GetCode(err error) string {
 }
 
 // GetStr returns the key as a string if err is an instance of Error and key
-// exists. If key does not exist or it's not a string it will return
+// exists. If key does not exist, or it's not a string it will return
 // false as the second return value.
 func GetStr(err error, key string) (string, bool) {
-	if err, ok := err.(*Error); ok && err != nil {
-		if val, ok := err.meta[key]; ok {
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		if val, ok := e.meta[key]; ok {
 			if ret, ok := val.(string); ok {
 				return ret, true
 			}
@@ -58,11 +62,12 @@ func GetStr(err error, key string) (string, bool) {
 }
 
 // GetInt returns the key as an integer if err is an instance of Error and key
-// exists. If key does not exist or it's not an integer it will return
+// exists. If key does not exist, or it's not an integer it will return
 // false as the second return value.
 func GetInt(err error, key string) (int, bool) {
-	if err, ok := err.(*Error); ok && err != nil {
-		if val, ok := err.meta[key]; ok {
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		if val, ok := e.meta[key]; ok {
 			if ret, ok := val.(int); ok {
 				return ret, true
 			}
@@ -72,11 +77,12 @@ func GetInt(err error, key string) (int, bool) {
 }
 
 // GetInt64 returns the key as an int64 if err is an instance of Error and key
-// exists. If key does not exist or it's not an int64 it will return
+// exists. If key does not exist, or it's not an int64 it will return
 // false as the second return value.
 func GetInt64(err error, key string) (int64, bool) {
-	if err, ok := err.(*Error); ok && err != nil {
-		if val, ok := err.meta[key]; ok {
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		if val, ok := e.meta[key]; ok {
 			if ret, ok := val.(int64); ok {
 				return ret, true
 			}
@@ -86,11 +92,12 @@ func GetInt64(err error, key string) (int64, bool) {
 }
 
 // GetFloat64 returns the key as a float64 if err is an instance of Error
-// and key exists. If key does not exist or it's not a float64 it will return
+// and key exists. If key does not exist, or it's not a float64 it will return
 // false as the second return value.
 func GetFloat64(err error, key string) (float64, bool) {
-	if err, ok := err.(*Error); ok && err != nil {
-		if val, ok := err.meta[key]; ok {
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		if val, ok := e.meta[key]; ok {
 			if ret, ok := val.(float64); ok {
 				return ret, true
 			}
@@ -100,11 +107,12 @@ func GetFloat64(err error, key string) (float64, bool) {
 }
 
 // GetTime returns the key as a time.Time if err is an instance of Error
-// and key exists. If key does not exist or it's not a time.Time it will return
+// and key exists. If key does not exist, or it's not a time.Time it will return
 // false as the second return value.
 func GetTime(err error, key string) (time.Time, bool) {
-	if err, ok := err.(*Error); ok && err != nil {
-		if val, ok := err.meta[key]; ok {
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		if val, ok := e.meta[key]; ok {
 			if ret, ok := val.(time.Time); ok {
 				return ret, true
 			}
@@ -114,11 +122,12 @@ func GetTime(err error, key string) (time.Time, bool) {
 }
 
 // GetBool returns the key as a boolean if err is an instance of Error and key
-// exists. If key does not exist or it is not a boolean it will return
+// exists. If key does not exist, or it is not a boolean it will return
 // false as the second return value.
 func GetBool(err error, key string) (bool, bool) {
-	if err, ok := err.(*Error); ok && err != nil {
-		if val, ok := err.meta[key]; ok {
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		if val, ok := e.meta[key]; ok {
 			if ret, ok := val.(bool); ok {
 				return ret, true
 			}

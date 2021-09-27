@@ -19,11 +19,8 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 	args = mArgs(args...)
 
 	require.NotNil(t, err, m("err=nil", args...))
-	E, ok := err.(*zrr.Error)
-	if !ok {
-		t.Error("expected err to be instance of zrr.Error")
-		return
-	}
+	var E *zrr.Error
+	require.ErrorAs(t, err, &E)
 
 	got := E.Cause()
 	if got != cause {
@@ -39,11 +36,8 @@ func AssertContains(t *testing.T, err error, cause string, args ...interface{}) 
 	args = mArgs(args...)
 
 	require.NotNil(t, err, m("err=nil", args...))
-	E, ok := err.(*zrr.Error)
-	if !ok {
-		t.Error("expected err to be instance of zrr.Error")
-		return
-	}
+	var E *zrr.Error
+	require.ErrorAs(t, err, &E)
 
 	got := E.Cause()
 	assert.Contains(t, got, cause)
@@ -65,19 +59,10 @@ func AssertEqual(t *testing.T, exp, got error, args ...interface{}) {
 
 	require.NotNil(t, exp, m("exp=nil", args...))
 	require.NotNil(t, got, m("got=nil", args...))
-	expE, ok := exp.(*zrr.Error)
-	if !ok {
-		t.Error("expected exp to be instance of zrr.Error")
-		return
-	}
-
-	gotE, ok := got.(*zrr.Error)
-	if !ok {
-		t.Error("expected got to be instance of zrr.Error")
-		return
-	}
-
-	assert.Exactly(t, expE.Error(), gotE.Error())
+	var EE, EG *zrr.Error
+	require.ErrorAs(t, exp, &EE)
+	require.ErrorAs(t, got, &EG)
+	assert.Exactly(t, EE.Error(), EG.Error())
 }
 
 // AssertNoKey asserts err is instance of zrr.Error and has no key set.

@@ -50,11 +50,15 @@ err := ErrPackageLevel.Str("path", "/path/to/file").Str("code", "ENewCode")
 fmt.Println(ErrPackageLevel) 
 fmt.Println(err)
 fmt.Println(errors.Is(err, ErrPackageLevel))
+fmt.Println(zrr.GetCode(err))
+fmt.Println(zrr.GetStr(err, "path"))
 
 // Output:
-// package level error :: code="ECode"
-// package level error :: code="ENewCode" path="/path/to/file"
+// package level error"
+// package level error"
 // true
+// ENewCode true
+// /path/to/file true
 ```
 
 ## Wrapping other errors
@@ -70,10 +74,12 @@ e1 := zrr.Wrap(err).Str("key", "value")
 
 fmt.Println(e1)
 fmt.Println(errors.Is(e1, err))
+fmt.Println(zrr.GetStr(e1, "key"))
 
 // Output:
-// some error :: key="value"
+// some error
 // true
+// value true
 ```
 
 ## Wrapping `zrr` errors.

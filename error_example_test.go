@@ -19,9 +19,21 @@ func ExampleError() {
 		Bool("bool", true)
 
 	fmt.Println(err.Error())
+	fmt.Println(zrr.GetStr(err, "str"))
+	fmt.Println(zrr.GetInt(err, "int"))
+	fmt.Println(zrr.GetFloat64(err, "float64"))
+	fmt.Println(zrr.GetTime(err, "time"))
+	fmt.Println(zrr.GetBool(err, "bool"))
+	fmt.Println(zrr.GetCode(err))
 
 	// Output:
-	// std error :: bool=true code="ECode" float64=1.23 int=5 str="string" time=2020-10-07T23:47:00Z
+	// std error
+	// string true
+	// 5 true
+	// 1.23 true
+	// 2020-10-07 23:47:00 +0000 UTC true
+	// true true
+	// ECode
 }
 
 func ExampleError_wrappingZrrError() {
@@ -33,7 +45,7 @@ func ExampleError_wrappingZrrError() {
 	fmt.Println(errors.Is(e1, err))
 
 	// Output:
-	// zrr wrapped: my error :: key="value"
+	// zrr wrapped: my error
 	// true
 }
 
@@ -44,13 +56,13 @@ func ExampleImm() {
 	// Somewhere in the code use ErrPackageLevel and add context to it.
 	err := ErrPackageLevel.Str("path", "/path/to/file").Str("code", "ENewCode")
 
-	fmt.Println(ErrPackageLevel) // Notice the error code has not been changed.
-	fmt.Println(err)
+	fmt.Println(ErrPackageLevel, zrr.GetCode(ErrPackageLevel)) // Notice the error code has not been changed.
+	fmt.Println(err, zrr.GetCode(err))
 	fmt.Println(errors.Is(err, ErrPackageLevel))
 
 	// Output:
-	// package level error :: code="ECode"
-	// package level error :: code="ENewCode" path="/path/to/file"
+	// package level error ECode
+	// package level error ENewCode
 	// true
 }
 
@@ -63,7 +75,7 @@ func ExampleWrap() {
 	fmt.Println(errors.Is(e1, err))
 
 	// Output:
-	// some error :: key="value"
+	// some error
 	// true
 }
 

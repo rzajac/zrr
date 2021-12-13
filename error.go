@@ -86,7 +86,7 @@ func base(err error, imm bool) *Error {
 
 // Error implements error interface and returns error message and key value
 // pairs associated with it separated by MsgSep.
-func (e *Error) Error() string { return e.msg(true) }
+func (e *Error) Error() string { return e.msg(false) }
 
 // Cause returns error message without key value pairs.
 func (e *Error) Cause() string { return e.msg(false) }

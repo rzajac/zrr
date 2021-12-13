@@ -2,7 +2,6 @@ package zrr
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 	"time"
 
@@ -16,7 +15,7 @@ func Test_Error_New(t *testing.T) {
 	// --- Then ---
 	assert.False(t, err.imm)
 	assert.True(t, HasCode(err, "ECode"))
-	assert.Exactly(t, `em0 :: code="ECode"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
 }
 
 func Test_Error_Newf(t *testing.T) {
@@ -43,7 +42,8 @@ func Test_Error_Imm_WithCode(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, err.imm)
-	assert.Exactly(t, `em0 :: code="ECode"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, "ECode", GetCode(err))
 }
 
 func Test_Error_Imm_WithCodes(t *testing.T) {
@@ -52,7 +52,8 @@ func Test_Error_Imm_WithCodes(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, err.imm)
-	assert.Exactly(t, `em0 :: code="ECode0"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, "ECode0", GetCode(err))
 }
 
 func Test_Error_Code(t *testing.T) {
@@ -60,7 +61,8 @@ func Test_Error_Code(t *testing.T) {
 	err := New("em0").Code("ECode")
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: code="ECode"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, "ECode", GetCode(err))
 }
 
 func Test_Error_Str(t *testing.T) {
@@ -68,7 +70,8 @@ func Test_Error_Str(t *testing.T) {
 	err := Newf("em0").Str("key0", "val0")
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0="val0"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": "val0"}, err.Meta())
 }
 
 func Test_Error_StrAppend_append(t *testing.T) {
@@ -76,7 +79,8 @@ func Test_Error_StrAppend_append(t *testing.T) {
 	err := Newf("em0").Str("key0", "val0").StrAppend("key0", "1")
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0="val0;1"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": "val0;1"}, err.Meta())
 }
 
 func Test_Error_StrAppend_create(t *testing.T) {
@@ -84,7 +88,8 @@ func Test_Error_StrAppend_create(t *testing.T) {
 	err := Newf("em0").StrAppend("key0", "val1")
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0="val1"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": "val1"}, err.Meta())
 }
 
 func Test_Error_StrAppend_overrideNonString(t *testing.T) {
@@ -92,7 +97,8 @@ func Test_Error_StrAppend_overrideNonString(t *testing.T) {
 	err := Newf("em0").Int("key0", 1).StrAppend("key0", "val1")
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0="val1"`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": "val1"}, err.Meta())
 }
 
 func Test_Error_Int(t *testing.T) {
@@ -100,7 +106,8 @@ func Test_Error_Int(t *testing.T) {
 	err := Newf("em0").Int("key0", 0)
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0=0`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": 0}, err.Meta())
 }
 
 func Test_Error_Int64(t *testing.T) {
@@ -108,7 +115,8 @@ func Test_Error_Int64(t *testing.T) {
 	err := Newf("em0").Int64("key0", 1234)
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0=1234`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": int64(1234)}, err.Meta())
 }
 
 func Test_Error_Float64(t *testing.T) {
@@ -116,7 +124,8 @@ func Test_Error_Float64(t *testing.T) {
 	err := Newf("em0").Float64("key0", 0.123)
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0=0.123`, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": 0.123}, err.Meta())
 }
 
 func Test_Error_Time(t *testing.T) {
@@ -127,8 +136,8 @@ func Test_Error_Time(t *testing.T) {
 	err := Newf("em0").Time("key0", tim)
 
 	// --- Then ---
-	exp := fmt.Sprintf(`em0 :: key0=%s`, tim.Format(time.RFC3339Nano))
-	assert.Exactly(t, exp, err.Error())
+	assert.Exactly(t, "em0", err.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": tim}, err.Meta())
 }
 
 func Test_Error_Bool(t *testing.T) {
@@ -137,8 +146,11 @@ func Test_Error_Bool(t *testing.T) {
 	err1 := Newf("em0").Bool("key0", false)
 
 	// --- Then ---
-	assert.Exactly(t, `em0 :: key0=true`, err0.Error())
-	assert.Exactly(t, `em0 :: key0=false`, err1.Error())
+	assert.Exactly(t, "em0", err0.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": true}, err0.Meta())
+
+	assert.Exactly(t, "em0", err1.Error())
+	assert.Exactly(t, map[string]interface{}{"key0": false}, err1.Meta())
 }
 
 func Test_Error_Multi_Metadata(t *testing.T) {
@@ -146,7 +158,14 @@ func Test_Error_Multi_Metadata(t *testing.T) {
 	err := New("test msg", "ECode").Int("key0", 5).Str("key1", "I'm a string")
 
 	// --- Then ---
-	assert.Exactly(t, `test msg :: code="ECode" key0=5 key1="I'm a string"`, err.Error())
+	assert.Exactly(t, "test msg", err.Error())
+	assert.Exactly(t, "ECode", GetCode(err))
+	exp := map[string]interface{}{
+		"code": "ECode",
+		"key0": 5,
+		"key1": "I'm a string",
+	}
+	assert.Exactly(t, exp, err.Meta())
 }
 
 func Test_Error_Wrap(t *testing.T) {
@@ -238,7 +257,12 @@ func Test_Error_FieldsFrom(t *testing.T) {
 	err := New("test msg").FieldsFrom(imp)
 
 	// --- Then ---
-	assert.Exactly(t, `test msg :: code="test" key1=123`, err.Error())
+	assert.Exactly(t, "test msg", err.Error())
+	exp := map[string]interface{}{
+		KCode:  "test",
+		"key1": 123,
+	}
+	assert.Exactly(t, exp, err.Meta())
 }
 
 func Test_Error_FieldsFrom_Immutable(t *testing.T) {
@@ -251,7 +275,13 @@ func Test_Error_FieldsFrom_Immutable(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, errors.Is(err, imm))
-	assert.Exactly(t, `test msg :: code="test" key1=123`, err.Error())
+	assert.Exactly(t, "test msg", err.Error())
+
+	exp := map[string]interface{}{
+		KCode:  "test",
+		"key1": 123,
+	}
+	assert.Exactly(t, exp, err.Meta())
 }
 
 func Test_Error_Cause(t *testing.T) {

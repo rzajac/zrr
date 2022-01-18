@@ -10,8 +10,7 @@ import (
 
 func ExampleError() {
 	// Create an error and add a bunch of context fields to it.
-	err := zrr.Wrap(errors.New("std error")).
-		Code("ECode").
+	err := zrr.Wrap(errors.New("std error"), "ECode").
 		Str("str", "string").
 		Int("int", 5).
 		Float64("float64", 1.23).
@@ -24,7 +23,7 @@ func ExampleError() {
 	fmt.Println(zrr.GetFloat64(err, "float64"))
 	fmt.Println(zrr.GetTime(err, "time"))
 	fmt.Println(zrr.GetBool(err, "bool"))
-	fmt.Println(zrr.GetCode(err))
+	fmt.Println(err.ErrCode())
 
 	// Output:
 	// std error
@@ -54,7 +53,7 @@ func ExampleImm() {
 	var ErrPackageLevel = zrr.Imm("package level error", "ECode")
 
 	// Somewhere in the code use ErrPackageLevel and add context to it.
-	err := ErrPackageLevel.Str("path", "/path/to/file").Str("code", "ENewCode")
+	err := zrr.Wrap(ErrPackageLevel, "ENewCode").Str("path", "/path/to/file")
 
 	fmt.Println(ErrPackageLevel, zrr.GetCode(ErrPackageLevel)) // Notice the error code has not been changed.
 	fmt.Println(err, zrr.GetCode(err))
@@ -113,18 +112,17 @@ func ExampleHasKey() {
 	// 0 false
 }
 
-func ExampleError_Cause() {
+func ExampleError_Error() {
 	err := zrr.New("message").Int("retry", 5)
 
-	fmt.Println(err.Cause())
+	fmt.Println(err.Error())
 
 	// Output: message
 }
 
 func ExampleError_Fields() {
-	// Create an error and add bunch of context fields to it.
-	err := zrr.Wrap(errors.New("std error")).
-		Code("ECode").
+	// Create an error and add a bunch of context fields to it.
+	err := zrr.Wrap(errors.New("std error"), "ECode").
 		Str("str", "string").
 		Int("int", 5).
 		Float64("float64", 1.23).
@@ -140,7 +138,6 @@ func ExampleError_Fields() {
 
 	// Output:
 	// bool = true
-	// code = ECode
 	// float64 = 1.23
 	// int = 5
 	// str = string

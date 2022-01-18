@@ -6,35 +6,37 @@
 package zrr
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
-	"sort"
-	"strings"
 	"time"
 )
 
 // KCode represents the key name used for error code.
 const KCode = "code"
 
-// MsgSep is the separator between error message and key value pairs.
-const MsgSep = " :: "
-
 // Wrap wraps err in Error instance. It returns nil if err is nil.
-func Wrap(err error) *Error {
+func Wrap(err error, code ...string) *Error {
 	if err == nil {
 		return nil
 	}
 	if e, ok := err.(*Error); ok {
+		if len(code) > 0 {
+			return e.setCode(code[0])
+		}
 		return e
 	}
-	return base(err, false)
+	return base(err, false, code...)
 }
 
 // Error represents an error with metadata key value pairs.
 type Error struct {
 	// Wrapped error.
 	error
+
+	// Error code.
+	code string
 
 	// Is error immutable.
 	// The immutable error instance is never being changed.
@@ -46,11 +48,7 @@ type Error struct {
 
 // New is a constructor returning new Error instance.
 func New(msg string, code ...string) *Error {
-	e := base(errors.New(msg), false)
-	if len(code) > 0 {
-		e = e.Code(code[0])
-	}
-	return e
+	return base(errors.New(msg), false, code...)
 }
 
 // Newf is a constructor returning new Error instance.
@@ -67,32 +65,36 @@ func Newf(msg string, args ...interface{}) *Error {
 // Error code is optional, if more than one code is provided the first
 // one will be used.
 func Imm(msg string, code ...string) *Error {
-	e := base(errors.New(msg), true)
+	e := base(errors.New(msg), true, code...)
 	e.imm = true
-	if len(code) > 0 {
-		e.meta[KCode] = code[0]
-	}
 	return e
 }
 
 // base is a base constructor for Error.
-func base(err error, imm bool) *Error {
+func base(err error, imm bool, code ...string) *Error {
 	return &Error{
 		error: err,
+		code:  fistCode(code...),
 		imm:   imm,
-		meta:  make(map[string]interface{}, 1),
+		meta:  make(map[string]interface{}),
 	}
 }
 
 // Error implements error interface and returns error message and key value
 // pairs associated with it separated by MsgSep.
-func (e *Error) Error() string { return e.msg(false) }
+func (e *Error) Error() string { return e.error.Error() }
 
-// Cause returns error message without key value pairs.
-func (e *Error) Cause() string { return e.msg(false) }
+// ErrCode returns error code.
+func (e *Error) ErrCode() string { return e.code }
 
-// Code adds error code to the error.
-func (e *Error) Code(c string) *Error { return e.with(KCode, c) }
+// setCode sets error code to the error.
+func (e *Error) setCode(c string) *Error {
+	if e.imm {
+		return base(e, false, c).FieldsFrom(e)
+	}
+	e.code = c
+	return e
+}
 
 // Str adds the key with string val to the error.
 func (e *Error) Str(key string, s string) *Error { return e.with(key, s) }
@@ -128,10 +130,7 @@ func (e *Error) Bool(key string, b bool) *Error { return e.with(key, b) }
 func (e *Error) FieldsFrom(src Fielder) *Error {
 	// Handle immutable error.
 	if e.imm {
-		ne := base(e, false)
-		if HasKey(e, KCode) {
-			ne.meta[KCode] = e.meta[KCode]
-		}
+		ne := base(e, false, e.code)
 		return src.ZrrFields(ne)
 	}
 
@@ -151,8 +150,8 @@ func (e *Error) with(key string, v interface{}) *Error {
 	// Handle immutable error.
 	if e.imm {
 		ne := base(e, false)
-		if HasKey(e, KCode) {
-			ne.meta[KCode] = e.meta[KCode]
+		if e.code != "" {
+			ne.code = e.code
 		}
 		ne.meta[key] = v
 		return ne
@@ -165,61 +164,69 @@ func (e *Error) with(key string, v interface{}) *Error {
 // Unwrap unwraps original error.
 func (e *Error) Unwrap() error { return e.error }
 
-// msg constructs error message. It will return error message without metadata
-// if the meta is false.
-func (e *Error) msg(meta bool) string {
-	var msg string
-	var w *Error
-	if errors.As(e.error, &w) {
-		msg = w.error.Error()
-	} else {
-		msg = e.error.Error()
-	}
-
-	// Return only error message.
-	if len(e.meta) == 0 || !meta {
-		return msg
-	}
-
-	// Sort metadata keys.
-	keys := make([]string, 0, len(e.meta))
-	for fn := range e.meta {
-		keys = append(keys, fn)
-	}
-	sort.Strings(keys)
-
-	// Construct metadata based on sorted keys.
-	parts := make([]string, 0, len(e.meta))
-	for _, fn := range keys {
-		val := e.meta[fn]
-		switch v := val.(type) {
-		case string:
-			// If value is a string escape quotes.
-			val = `"` + strings.ReplaceAll(v, `"`, `\"`) + `"`
-		case time.Time:
-			val = v.Format(time.RFC3339Nano)
-		}
-		parts = append(parts, fn+"="+fmt.Sprintf("%v", val))
-	}
-
-	if len(parts) > 0 {
-		return msg + MsgSep + strings.Join(parts, " ")
-	}
-
-	return msg
-}
-
 // Fields returns metadata iterator. Caller must not hold to the iterator
 // longer then it is necessary to loop over metadata key-value pairs.
 func (e *Error) Fields() *iter { return newIter(e) }
 
 // Meta returns error metadata. The returned map must be treated as read-only.
-func (e *Error) Meta() map[string]interface{} {
-	return e.meta
+func (e *Error) Meta() map[string]interface{} { return e.meta }
+
+func (e *Error) MarshalJSON() ([]byte, error) {
+	m := map[string]interface{}{
+		"error": e.Error(),
+		"code":  e.code,
+	}
+	if len(e.meta) > 0 {
+		m["meta"] = e.meta
+	}
+	return json.Marshal(m)
+}
+
+// UnmarshalJSON unmarshal error's JSON representation.
+// Notes:
+//  - all metadata numeric values will be unmarshalled as float64
+//
+func (e *Error) UnmarshalJSON(data []byte) error {
+	m := make(map[string]interface{}, 3)
+
+	if err := json.Unmarshal(data, &m); err != nil {
+		return err
+	}
+
+	msgI, _ := m["error"]
+	msg, _ := msgI.(string)
+	if msg == "" {
+		return errors.New("invalid JSON format")
+	}
+
+	codeI, _ := m["code"]
+	code, _ := codeI.(string)
+
+	metaI, _ := m["meta"]
+	var meta map[string]interface{}
+	if metaI != nil {
+		meta, _ = metaI.(map[string]interface{})
+	}
+	if meta == nil {
+		meta = make(map[string]interface{})
+	}
+
+	e.error = errors.New(msg)
+	e.code = code
+	e.meta = meta
+	return nil
 }
 
 // isNil returns true if v is nil or v is nil interface.
 func isNil(v interface{}) bool {
 	defer func() { recover() }()
 	return v == nil || reflect.ValueOf(v).IsNil()
+}
+
+// firstCode returns first code from the slice.
+func fistCode(code ...string) string {
+	if len(code) > 0 {
+		return code[0]
+	}
+	return ""
 }

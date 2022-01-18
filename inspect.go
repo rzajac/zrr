@@ -23,16 +23,13 @@ func HasKey(err error, key string) bool {
 	return false
 }
 
-// HasCode returns true if error err is instance of Error and has key KCode
-// which equals to one of the codes.
+// HasCode returns true if error err is instance of Error and has any of the codes.
 func HasCode(err error, codes ...string) bool {
 	var e *Error
 	if errors.As(err, &e) && e != nil {
-		if val, ok := e.meta[KCode]; ok {
-			for _, code := range codes {
-				if code == val {
-					return true
-				}
+		for _, code := range codes {
+			if code == e.code {
+				return true
 			}
 		}
 	}
@@ -42,8 +39,11 @@ func HasCode(err error, codes ...string) bool {
 // GetCode returns error code if error err is instance of Error.
 // If error code is not set it will return empty string.
 func GetCode(err error) string {
-	code, _ := GetStr(err, KCode)
-	return code
+	var e *Error
+	if errors.As(err, &e) && e != nil {
+		return e.code
+	}
+	return ""
 }
 
 // GetStr returns the key as a string if err is an instance of Error and key

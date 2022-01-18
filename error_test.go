@@ -1,6 +1,7 @@
 package zrr
 
 import (
+	"encoding/json"
 	"errors"
 	"testing"
 	"time"
@@ -56,9 +57,9 @@ func Test_Error_Imm_WithCodes(t *testing.T) {
 	assert.Exactly(t, "ECode0", GetCode(err))
 }
 
-func Test_Error_Code(t *testing.T) {
+func Test_Error_ErrCode(t *testing.T) {
 	// --- When ---
-	err := New("em0").Code("ECode")
+	err := New("em0", "ECode")
 
 	// --- Then ---
 	assert.Exactly(t, "em0", err.Error())
@@ -161,7 +162,6 @@ func Test_Error_Multi_Metadata(t *testing.T) {
 	assert.Exactly(t, "test msg", err.Error())
 	assert.Exactly(t, "ECode", GetCode(err))
 	exp := map[string]interface{}{
-		"code": "ECode",
 		"key0": 5,
 		"key1": "I'm a string",
 	}
@@ -237,7 +237,6 @@ func Test_Error_Meta(t *testing.T) {
 
 	// --- Then ---
 	exp := map[string]interface{}{
-		KCode: "ECode",
 		"key": 123,
 	}
 	assert.Exactly(t, exp, got)
@@ -284,7 +283,7 @@ func Test_Error_FieldsFrom_Immutable(t *testing.T) {
 	assert.Exactly(t, exp, err.Meta())
 }
 
-func Test_Error_Cause(t *testing.T) {
+func Test_Error_Error(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -298,7 +297,7 @@ func Test_Error_Cause(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, tc.err.Cause(), "test %s", tc.testN)
+			assert.Exactly(t, tc.exp, tc.err.Error(), "test %s", tc.testN)
 		})
 	}
 }
@@ -313,4 +312,104 @@ func Test_Error_ZrrFields(t *testing.T) {
 	// --- Then ---
 	assert.Exactly(t, err0.Error(), err1.Error())
 	assert.Same(t, err0.Unwrap(), err1.Unwrap())
+}
+
+func Test_Error_MarshalJSON(t *testing.T) {
+	t.Run("without code", func(t *testing.T) {
+		// --- Given ---
+		e := New("test msg")
+
+		// --- When ---
+		data, err := json.Marshal(e)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		exp := `{"error":"test msg", "code":""}`
+		assert.JSONEq(t, exp, string(data))
+	})
+
+	t.Run("with code no meta", func(t *testing.T) {
+		// --- Given ---
+		e := New("test msg", "ECTest")
+
+		// --- When ---
+		data, err := json.Marshal(e)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		exp := `{"error":"test msg", "code":"ECTest"}`
+		assert.JSONEq(t, exp, string(data))
+	})
+
+	t.Run("with code and meta", func(t *testing.T) {
+		// --- Given ---
+		e := New("test msg", "ECTest").Str("key", "value")
+
+		// --- When ---
+		data, err := json.Marshal(e)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		exp := `{"error":"test msg", "code":"ECTest", "meta": {"key": "value"}}`
+		assert.JSONEq(t, exp, string(data))
+	})
+}
+
+func Test_Error_UnmarshalJSON(t *testing.T) {
+	t.Run("without code", func(t *testing.T) {
+		// --- Given ---
+		data := []byte(`{"error":"test msg", "code":""}`)
+
+		// --- When ---
+		var e *Error
+		err := json.Unmarshal(data, &e)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Exactly(t, "test msg", e.error.Error())
+		assert.Exactly(t, "", e.ErrCode())
+		assert.Len(t, e.meta, 0)
+		assert.NotNil(t, e.meta)
+	})
+
+	t.Run("with code no meta", func(t *testing.T) {
+		// --- Given ---
+		data := []byte(`{"error":"test msg", "code":"ECode"}`)
+
+		// --- When ---
+		var e *Error
+		err := json.Unmarshal(data, &e)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Exactly(t, "test msg", e.error.Error())
+		assert.Exactly(t, "ECode", e.ErrCode())
+		assert.Len(t, e.meta, 0)
+		assert.NotNil(t, e.meta)
+	})
+
+	t.Run("with code and meta", func(t *testing.T) {
+		// --- Given ---
+		data := []byte(`{
+			"error":"test msg", 
+			"code":"ECode", 
+			"meta": {
+				"key": 123, 
+				"tim": "2022-01-18T13:57:00Z"
+			}
+		}`)
+
+		// --- When ---
+		var e *Error
+		err := json.Unmarshal(data, &e)
+
+		// --- Then ---
+		assert.NoError(t, err)
+		assert.Exactly(t, "test msg", e.error.Error())
+		assert.Exactly(t, "ECode", e.ErrCode())
+		assert.Len(t, e.meta, 2)
+		assert.Contains(t, e.meta, "key")
+		assert.Exactly(t, float64(123), e.meta["key"])
+		assert.Exactly(t, "2022-01-18T13:57:00Z", e.meta["tim"])
+	})
 }

@@ -13,9 +13,6 @@ import (
 	"time"
 )
 
-// KCode represents the key name used for error code.
-const KCode = "code"
-
 // Wrap wraps err in Error instance. It returns nil if err is nil.
 func Wrap(err error, code ...string) *Error {
 	if err == nil {

@@ -245,7 +245,7 @@ func Test_Error_Meta(t *testing.T) {
 type implementor string
 
 func (t implementor) ZrrFields(e *Error) *Error {
-	return e.Str(KCode, string(t)).Int("key1", 123)
+	return e.Str("keyS", string(t)).Int("key1", 123)
 }
 
 func Test_Error_FieldsFrom(t *testing.T) {
@@ -258,7 +258,7 @@ func Test_Error_FieldsFrom(t *testing.T) {
 	// --- Then ---
 	assert.Exactly(t, "test msg", err.Error())
 	exp := map[string]interface{}{
-		KCode:  "test",
+		"keyS": "test",
 		"key1": 123,
 	}
 	assert.Exactly(t, exp, err.Meta())
@@ -277,7 +277,7 @@ func Test_Error_FieldsFrom_Immutable(t *testing.T) {
 	assert.Exactly(t, "test msg", err.Error())
 
 	exp := map[string]interface{}{
-		KCode:  "test",
+		"keyS": "test",
 		"key1": 123,
 	}
 	assert.Exactly(t, exp, err.Meta())

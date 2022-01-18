@@ -47,8 +47,11 @@ func AssertContains(t *testing.T, err error, cause string, args ...interface{}) 
 func AssertCode(t *testing.T, err error, exp string, args ...interface{}) {
 	t.Helper()
 	args = mArgs(args...)
+
 	require.NotNil(t, err, m("err=nil", args...))
-	AssertStr(t, err, zrr.KCode, exp)
+	var E *zrr.Error
+	require.ErrorAs(t, err, &E)
+	assert.Exactly(t, exp, E.ErrCode(), m("err=nil", args...))
 }
 
 // AssertEqual asserts err and got are instance of zrr.Error and their error

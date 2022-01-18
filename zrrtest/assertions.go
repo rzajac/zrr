@@ -22,7 +22,7 @@ func AssertCause(t *testing.T, err error, cause string, args ...interface{}) {
 	var E *zrr.Error
 	require.ErrorAs(t, err, &E)
 
-	got := E.Cause()
+	got := E.Error()
 	if got != cause {
 		t.Errorf("expected cause '%s' but got '%s'", cause, got)
 		return
@@ -39,7 +39,7 @@ func AssertContains(t *testing.T, err error, cause string, args ...interface{}) 
 	var E *zrr.Error
 	require.ErrorAs(t, err, &E)
 
-	got := E.Cause()
+	got := E.Error()
 	assert.Contains(t, got, cause)
 }
 

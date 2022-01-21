@@ -9,9 +9,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"reflect"
 	"time"
 )
+
+// MetadataGetter is an interface wrapping GetMetadata method.
+type MetadataGetter interface {
+	// GetMetadata returns error metadata. The returned metadata map should be
+	// considered read-only.
+	GetMetadata() map[string]interface{}
+}
+
+// MetadataErrSetter is an interface wrapping SetErrMetadata method.
+type MetadataErrSetter interface {
+	// SetErrMetadata sets error metadata. The returned instance might be
+	// different from the one this method is called if the error is immutable.
+	SetErrMetadata(map[string]interface{}) *Error
+}
+
+// ECInvJSON represents invalid JSON error code.
+const ECInvJSON = "ECInvJSON"
+
+// ErrInvJSON represents package level error indicating JSON structure or
+// format error.
+var ErrInvJSON = Imm("invalid JSON", ECInvJSON)
 
 // Wrap wraps err in Error instance. It returns nil if err is nil.
 func Wrap(err error, code ...string) *Error {
@@ -62,9 +82,7 @@ func Newf(msg string, args ...interface{}) *Error {
 // Error code is optional, if more than one code is provided the first
 // one will be used.
 func Imm(msg string, code ...string) *Error {
-	e := base(errors.New(msg), true, code...)
-	e.imm = true
-	return e
+	return base(errors.New(msg), true, code...)
 }
 
 // base is a base constructor for Error.
@@ -87,7 +105,7 @@ func (e *Error) ErrCode() string { return e.code }
 // setCode sets error code to the error.
 func (e *Error) setCode(c string) *Error {
 	if e.imm {
-		return base(e, false, c).FieldsFrom(e)
+		return base(e, false, c).SetErrMetadata(e.GetMetadata())
 	}
 	e.code = c
 	return e
@@ -123,33 +141,31 @@ func (e *Error) Time(key string, t time.Time) *Error { return e.with(key, t) }
 // Bool adds the key with val as a boolean to the error.
 func (e *Error) Bool(key string, b bool) *Error { return e.with(key, b) }
 
-// FieldsFrom set fields from src.
-func (e *Error) FieldsFrom(src Fielder) *Error {
-	// Handle immutable error.
-	if e.imm {
-		ne := base(e, false, e.code)
-		return src.ZrrFields(ne)
+// SetErrMetadata sets error metadata. The returned instance might be
+// different from the one this method is called if the error is immutable.
+func (e *Error) SetErrMetadata(src map[string]interface{}) *Error {
+	ee := e
+	for k, v := range src {
+		ee = ee.with(k, v)
 	}
-
-	return src.ZrrFields(e)
+	return ee
 }
 
-// ZrrFields implements Fielder interface.
-func (e *Error) ZrrFields(err *Error) *Error {
-	for k, v := range e.meta {
-		_ = err.with(k, v)
-	}
-	return err
+// SetMetadataFrom is a convenience method setting metadata from an instance
+// which implements MetadataGetter.
+func (e *Error) SetMetadataFrom(src MetadataGetter) *Error {
+	return e.SetErrMetadata(src.GetMetadata())
 }
+
+// GetMetadata returns error metadata. The returned metadata map should be
+// considered read-only.
+func (e *Error) GetMetadata() map[string]interface{} { return e.meta }
 
 // with adds context to the error.
 func (e *Error) with(key string, v interface{}) *Error {
 	// Handle immutable error.
 	if e.imm {
-		ne := base(e, false)
-		if e.code != "" {
-			ne.code = e.code
-		}
+		ne := base(e, false, e.code)
 		ne.meta[key] = v
 		return ne
 	}
@@ -160,13 +176,6 @@ func (e *Error) with(key string, v interface{}) *Error {
 
 // Unwrap unwraps original error.
 func (e *Error) Unwrap() error { return e.error }
-
-// Fields returns metadata iterator. Caller must not hold to the iterator
-// longer then it is necessary to loop over metadata key-value pairs.
-func (e *Error) Fields() *iter { return newIter(e) }
-
-// Meta returns error metadata. The returned map must be treated as read-only.
-func (e *Error) Meta() map[string]interface{} { return e.meta }
 
 func (e *Error) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{
@@ -193,7 +202,7 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 	msgI, _ := m["error"]
 	msg, _ := msgI.(string)
 	if msg == "" {
-		return errors.New("invalid JSON format")
+		return ErrInvJSON
 	}
 
 	codeI, _ := m["code"]
@@ -215,10 +224,10 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 }
 
 // isNil returns true if v is nil or v is nil interface.
-func isNil(v interface{}) bool {
-	defer func() { recover() }()
-	return v == nil || reflect.ValueOf(v).IsNil()
-}
+//func isNil(v interface{}) bool {
+//	defer func() { recover() }()
+//	return v == nil || reflect.ValueOf(v).IsNil()
+//}
 
 // firstCode returns first code from the slice.
 func fistCode(code ...string) string {

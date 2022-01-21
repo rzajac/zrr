@@ -119,27 +119,3 @@ func ExampleError_Error() {
 
 	// Output: message
 }
-
-func ExampleError_Fields() {
-	// Create an error and add a bunch of context fields to it.
-	err := zrr.Wrap(errors.New("std error"), "ECode").
-		Str("str", "string").
-		Int("int", 5).
-		Float64("float64", 1.23).
-		Time("time", time.Date(2020, time.October, 7, 23, 47, 0, 0, time.UTC)).
-		Bool("bool", true)
-
-	// Somewhere else (maybe during logging extract the context fields.
-	iter := err.Fields()
-	for iter.Next() {
-		key, val := iter.Get()
-		fmt.Printf("%s = %v\n", key, val)
-	}
-
-	// Output:
-	// bool = true
-	// float64 = 1.23
-	// int = 5
-	// str = string
-	// time = 2020-10-07 23:47:00 +0000 UTC
-}

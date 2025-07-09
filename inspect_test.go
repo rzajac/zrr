@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/ctx42/testing/pkg/assert"
 )
 
 func Test_IsImmutable(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_IsImmutable(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, IsImmutable(tc.err), "test %s", tc.testN)
+			assert.Equal(t, tc.exp, IsImmutable(tc.err))
 		})
 	}
 }
@@ -45,7 +45,7 @@ func Test_HasKey(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, HasKey(tc.err, tc.key), "test %s", tc.testN)
+			assert.Equal(t, tc.exp, HasKey(tc.err, tc.key))
 		})
 	}
 }
@@ -67,7 +67,7 @@ func Test_HasCode(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, HasCode(tc.err, tc.code...), "test %s", tc.testN)
+			assert.Equal(t, tc.exp, HasCode(tc.err, tc.code...))
 		})
 	}
 }
@@ -87,7 +87,7 @@ func Test_GetCode(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, GetCode(tc.err), "test %s", tc.testN)
+			assert.Equal(t, tc.exp, GetCode(tc.err))
 		})
 	}
 }
@@ -114,8 +114,8 @@ func Test_GetStr(t *testing.T) {
 			value, exist := GetStr(tc.err, tc.key)
 
 			// --- Then ---
-			assert.Exactly(t, tc.exist, exist, "test %s", tc.testN)
-			assert.Exactly(t, tc.value, value, "test %s", tc.testN)
+			assert.Equal(t, tc.exist, exist)
+			assert.Equal(t, tc.value, value)
 		})
 	}
 }
@@ -142,8 +142,8 @@ func Test_GetInt(t *testing.T) {
 			value, exist := GetInt(tc.err, tc.key)
 
 			// --- Then ---
-			assert.Exactly(t, tc.exist, exist, "test %s", tc.testN)
-			assert.Exactly(t, tc.value, value, "test %s", tc.testN)
+			assert.Equal(t, tc.exist, exist)
+			assert.Equal(t, tc.value, value)
 		})
 	}
 }
@@ -171,8 +171,8 @@ func Test_GetInt64(t *testing.T) {
 			value, exist := GetInt64(tc.err, tc.key)
 
 			// --- Then ---
-			assert.Exactly(t, tc.exist, exist, "test %s", tc.testN)
-			assert.Exactly(t, tc.value, value, "test %s", tc.testN)
+			assert.Equal(t, tc.exist, exist)
+			assert.Equal(t, tc.value, value)
 		})
 	}
 }
@@ -199,8 +199,8 @@ func Test_GetFloat64(t *testing.T) {
 			value, exist := GetFloat64(tc.err, tc.key)
 
 			// --- Then ---
-			assert.Exactly(t, tc.exist, exist, "test %s", tc.testN)
-			assert.Exactly(t, tc.value, value, "test %s", tc.testN)
+			assert.Equal(t, tc.exist, exist)
+			assert.Equal(t, tc.value, value)
 		})
 	}
 }
@@ -229,8 +229,8 @@ func Test_GetTime(t *testing.T) {
 			value, exist := GetTime(tc.err, tc.key)
 
 			// --- Then ---
-			assert.Exactly(t, tc.exist, exist, "test %s", tc.testN)
-			assert.Exactly(t, tc.value, value, "test %s", tc.testN)
+			assert.Equal(t, tc.exist, exist)
+			assert.Equal(t, tc.value, value)
 		})
 	}
 }
@@ -257,8 +257,8 @@ func Test_GetBool(t *testing.T) {
 			value, exist := GetBool(tc.err, tc.key)
 
 			// --- Then ---
-			assert.Exactly(t, tc.exist, exist, "test %s", tc.testN)
-			assert.Exactly(t, tc.value, value, "test %s", tc.testN)
+			assert.Equal(t, tc.exist, exist)
+			assert.Equal(t, tc.value, value)
 		})
 	}
 }

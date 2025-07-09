@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/ctx42/testing/pkg/assert"
 )
 
 func Test_Error_New(t *testing.T) {
@@ -16,7 +16,7 @@ func Test_Error_New(t *testing.T) {
 	// --- Then ---
 	assert.False(t, err.imm)
 	assert.True(t, HasCode(err, "ECode"))
-	assert.Exactly(t, "em0", err.Error())
+	assert.Equal(t, "em0", err.Error())
 }
 
 func Test_Error_Newf(t *testing.T) {
@@ -25,7 +25,7 @@ func Test_Error_Newf(t *testing.T) {
 
 	// --- Then ---
 	assert.False(t, err.imm)
-	assert.Exactly(t, "error message", err.Error())
+	assert.Equal(t, "error message", err.Error())
 }
 
 func Test_Error_Imm(t *testing.T) {
@@ -34,7 +34,7 @@ func Test_Error_Imm(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, err.imm)
-	assert.Exactly(t, "em0", err.Error())
+	assert.Equal(t, "em0", err.Error())
 }
 
 func Test_Error_Imm_WithCode(t *testing.T) {
@@ -43,8 +43,8 @@ func Test_Error_Imm_WithCode(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, err.imm)
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, "ECode", GetCode(err))
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, "ECode", GetCode(err))
 }
 
 func Test_Error_Imm_WithCodes(t *testing.T) {
@@ -53,8 +53,8 @@ func Test_Error_Imm_WithCodes(t *testing.T) {
 
 	// --- Then ---
 	assert.True(t, err.imm)
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, "ECode0", GetCode(err))
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, "ECode0", GetCode(err))
 }
 
 func Test_Error_Imm_Wrap_withNewCode(t *testing.T) {
@@ -66,8 +66,8 @@ func Test_Error_Imm_Wrap_withNewCode(t *testing.T) {
 	assert.False(t, ne.imm)
 	assert.NotSame(t, im, ne)
 	assert.Same(t, im, ne.Unwrap())
-	assert.Exactly(t, "em0", ne.Error())
-	assert.Exactly(t, "ECode1", GetCode(ne))
+	assert.Equal(t, "em0", ne.Error())
+	assert.Equal(t, "ECode1", GetCode(ne))
 }
 
 func Test_Error_ErrCode(t *testing.T) {
@@ -75,8 +75,8 @@ func Test_Error_ErrCode(t *testing.T) {
 	err := New("em0", "ECode")
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, "ECode", GetCode(err))
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, "ECode", GetCode(err))
 }
 
 func Test_Error_Str(t *testing.T) {
@@ -84,8 +84,8 @@ func Test_Error_Str(t *testing.T) {
 	err := Newf("em0").Str("key0", "val0")
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": "val0"}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": "val0"}, err.GetMetadata())
 }
 
 func Test_Error_StrAppend_append(t *testing.T) {
@@ -93,8 +93,8 @@ func Test_Error_StrAppend_append(t *testing.T) {
 	err := Newf("em0").Str("key0", "val0").StrAppend("key0", "1")
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": "val0;1"}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": "val0;1"}, err.GetMetadata())
 }
 
 func Test_Error_StrAppend_create(t *testing.T) {
@@ -102,8 +102,8 @@ func Test_Error_StrAppend_create(t *testing.T) {
 	err := Newf("em0").StrAppend("key0", "val1")
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": "val1"}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": "val1"}, err.GetMetadata())
 }
 
 func Test_Error_StrAppend_overrideNonString(t *testing.T) {
@@ -111,8 +111,8 @@ func Test_Error_StrAppend_overrideNonString(t *testing.T) {
 	err := Newf("em0").Int("key0", 1).StrAppend("key0", "val1")
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": "val1"}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": "val1"}, err.GetMetadata())
 }
 
 func Test_Error_Int(t *testing.T) {
@@ -120,8 +120,8 @@ func Test_Error_Int(t *testing.T) {
 	err := Newf("em0").Int("key0", 0)
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": 0}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": 0}, err.GetMetadata())
 }
 
 func Test_Error_Int64(t *testing.T) {
@@ -129,8 +129,8 @@ func Test_Error_Int64(t *testing.T) {
 	err := Newf("em0").Int64("key0", 1234)
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": int64(1234)}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": int64(1234)}, err.GetMetadata())
 }
 
 func Test_Error_Float64(t *testing.T) {
@@ -138,8 +138,8 @@ func Test_Error_Float64(t *testing.T) {
 	err := Newf("em0").Float64("key0", 0.123)
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": 0.123}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": 0.123}, err.GetMetadata())
 }
 
 func Test_Error_Time(t *testing.T) {
@@ -150,8 +150,8 @@ func Test_Error_Time(t *testing.T) {
 	err := Newf("em0").Time("key0", tim)
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": tim}, err.GetMetadata())
+	assert.Equal(t, "em0", err.Error())
+	assert.Equal(t, map[string]interface{}{"key0": tim}, err.GetMetadata())
 }
 
 func Test_Error_Bool(t *testing.T) {
@@ -160,11 +160,11 @@ func Test_Error_Bool(t *testing.T) {
 	err1 := Newf("em0").Bool("key0", false)
 
 	// --- Then ---
-	assert.Exactly(t, "em0", err0.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": true}, err0.GetMetadata())
+	assert.Equal(t, "em0", err0.Error())
+	assert.Equal(t, map[string]interface{}{"key0": true}, err0.GetMetadata())
 
-	assert.Exactly(t, "em0", err1.Error())
-	assert.Exactly(t, map[string]interface{}{"key0": false}, err1.GetMetadata())
+	assert.Equal(t, "em0", err1.Error())
+	assert.Equal(t, map[string]interface{}{"key0": false}, err1.GetMetadata())
 }
 
 func Test_Error_GetMetadata(t *testing.T) {
@@ -178,7 +178,7 @@ func Test_Error_GetMetadata(t *testing.T) {
 	exp := map[string]interface{}{
 		"key": 123,
 	}
-	assert.Exactly(t, exp, got)
+	assert.Equal(t, exp, got)
 }
 
 func Test_Error_GetMetadata_multi(t *testing.T) {
@@ -186,13 +186,13 @@ func Test_Error_GetMetadata_multi(t *testing.T) {
 	err := New("test msg", "ECode").Int("key0", 5).Str("key1", "I'm a string")
 
 	// --- Then ---
-	assert.Exactly(t, "test msg", err.Error())
-	assert.Exactly(t, "ECode", GetCode(err))
+	assert.Equal(t, "test msg", err.Error())
+	assert.Equal(t, "ECode", GetCode(err))
 	exp := map[string]interface{}{
 		"key0": 5,
 		"key1": "I'm a string",
 	}
-	assert.Exactly(t, exp, err.GetMetadata())
+	assert.Equal(t, exp, err.GetMetadata())
 }
 
 func Test_Error_Wrap(t *testing.T) {
@@ -203,9 +203,9 @@ func Test_Error_Wrap(t *testing.T) {
 	err := Wrap(e)
 
 	// --- Then ---
-	assert.IsType(t, &Error{}, err)
+	assert.Type(t, &Error{}, err)
 	assert.False(t, err.imm)
-	assert.Exactly(t, "std error", err.Error())
+	assert.Equal(t, "std error", err.Error())
 	assert.NotNil(t, err.Unwrap())
 }
 
@@ -217,10 +217,10 @@ func Test_Error_Wrap_withNewCode(t *testing.T) {
 	err := Wrap(e, "ECode1")
 
 	// --- Then ---
-	assert.IsType(t, &Error{}, err)
+	assert.Type(t, &Error{}, err)
 	assert.False(t, err.imm)
-	assert.Exactly(t, "std error", err.Error())
-	assert.Exactly(t, "ECode1", GetCode(err))
+	assert.Equal(t, "std error", err.Error())
+	assert.Equal(t, "ECode1", GetCode(err))
 }
 
 func Test_Error_Wrap_nil(t *testing.T) {
@@ -266,7 +266,7 @@ func Test_Error_with_immutable(t *testing.T) {
 	assert.True(t, HasCode(err1, "ECode"))
 
 	val, ok := GetStr(err1, "key0")
-	assert.Exactly(t, "val0", val)
+	assert.Equal(t, "val0", val)
 	assert.True(t, ok)
 }
 
@@ -284,7 +284,7 @@ func Test_Error_Error(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			assert.Exactly(t, tc.exp, tc.err.Error(), "test %s", tc.testN)
+			assert.ErrorEqual(t, tc.exp, tc.err)
 		})
 	}
 }
@@ -297,7 +297,7 @@ func Test_Error_ZrrFields(t *testing.T) {
 	err1 := Wrap(err0.Unwrap()).SetErrMetadata(err0.GetMetadata())
 
 	// --- Then ---
-	assert.Exactly(t, err0.Error(), err1.Error())
+	assert.Equal(t, err0.Error(), err1.Error())
 	assert.Same(t, err0.Unwrap(), err1.Unwrap())
 }
 
@@ -312,7 +312,7 @@ func Test_Error_MarshalJSON(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		exp := `{"error":"test msg", "code":""}`
-		assert.JSONEq(t, exp, string(data))
+		assert.JSON(t, exp, string(data))
 	})
 
 	t.Run("with code no meta", func(t *testing.T) {
@@ -325,7 +325,7 @@ func Test_Error_MarshalJSON(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		exp := `{"error":"test msg", "code":"ECTest"}`
-		assert.JSONEq(t, exp, string(data))
+		assert.JSON(t, exp, string(data))
 	})
 
 	t.Run("with code and meta", func(t *testing.T) {
@@ -338,7 +338,7 @@ func Test_Error_MarshalJSON(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		exp := `{"error":"test msg", "code":"ECTest", "meta": {"key": "value"}}`
-		assert.JSONEq(t, exp, string(data))
+		assert.JSON(t, exp, string(data))
 	})
 }
 
@@ -353,9 +353,9 @@ func Test_Error_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-		assert.Exactly(t, "test msg", e.error.Error())
-		assert.Exactly(t, "", e.ErrCode())
-		assert.Len(t, e.meta, 0)
+		assert.Equal(t, "test msg", e.error.Error())
+		assert.Equal(t, "", e.ErrCode())
+		assert.Len(t, 0, e.meta)
 		assert.NotNil(t, e.meta)
 	})
 
@@ -369,9 +369,9 @@ func Test_Error_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-		assert.Exactly(t, "test msg", e.error.Error())
-		assert.Exactly(t, "ECode", e.ErrCode())
-		assert.Len(t, e.meta, 0)
+		assert.Equal(t, "test msg", e.error.Error())
+		assert.Equal(t, "ECode", e.ErrCode())
+		assert.Len(t, 0, e.meta)
 		assert.NotNil(t, e.meta)
 	})
 
@@ -392,12 +392,12 @@ func Test_Error_UnmarshalJSON(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-		assert.Exactly(t, "test msg", e.error.Error())
-		assert.Exactly(t, "ECode", e.ErrCode())
-		assert.Len(t, e.meta, 2)
-		assert.Contains(t, e.meta, "key")
-		assert.Exactly(t, float64(123), e.meta["key"])
-		assert.Exactly(t, "2022-01-18T13:57:00Z", e.meta["tim"])
+		assert.Equal(t, "test msg", e.error.Error())
+		assert.Equal(t, "ECode", e.ErrCode())
+		assert.Len(t, 2, e.meta)
+		assert.HasKey(t, "key", e.meta)
+		assert.Equal(t, float64(123), e.meta["key"])
+		assert.Equal(t, "2022-01-18T13:57:00Z", e.meta["tim"])
 	})
 
 	t.Run("without error key", func(t *testing.T) {
@@ -421,7 +421,7 @@ func Test_Error_UnmarshalJSON(t *testing.T) {
 		err := json.Unmarshal(data, &e)
 
 		// --- Then ---
-		assert.IsType(t, err, &json.UnmarshalTypeError{})
+		assert.Type(t, err, &json.UnmarshalTypeError{})
 	})
 }
 
@@ -443,5 +443,5 @@ func Test_Error_SetMetadataFrom(t *testing.T) {
 		"k1": "v1",
 		"k2": 2,
 	}
-	assert.Exactly(t, exp, ne.GetMetadata())
+	assert.Equal(t, exp, ne.GetMetadata())
 }

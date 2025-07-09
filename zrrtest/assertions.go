@@ -11,7 +11,7 @@ import (
 
 // AssertCause asserts err is instance of zrr.Error and has error
 // message (without key value pairs) equal to cause.
-func AssertCause(t *testing.T, err error, cause string, _ any) {
+func AssertCause(t *testing.T, err error, cause string, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -27,7 +27,7 @@ func AssertCause(t *testing.T, err error, cause string, _ any) {
 
 // AssertContains asserts err is instance of zrr.Error and has error
 // message (without key value pairs) which contains cause string.
-func AssertContains(t *testing.T, err error, cause string, _ any) {
+func AssertContains(t *testing.T, err error, cause string, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -39,7 +39,7 @@ func AssertContains(t *testing.T, err error, cause string, _ any) {
 }
 
 // AssertCode asserts err is instance of zrr.Error and has error code exp.
-func AssertCode(t *testing.T, err error, exp string, _ any) {
+func AssertCode(t *testing.T, err error, exp string, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -50,7 +50,7 @@ func AssertCode(t *testing.T, err error, exp string, _ any) {
 
 // AssertEqual asserts err and got are instance of zrr.Error and their error
 // messages (with key value pairs) are equal.
-func AssertEqual(t *testing.T, exp, got error, _ any) {
+func AssertEqual(t *testing.T, exp, got error, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, exp)
@@ -62,7 +62,7 @@ func AssertEqual(t *testing.T, exp, got error, _ any) {
 }
 
 // AssertNoKey asserts err is instance of zrr.Error and has no key set.
-func AssertNoKey(t *testing.T, err error, key string, _ any) {
+func AssertNoKey(t *testing.T, err error, key string, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -70,7 +70,7 @@ func AssertNoKey(t *testing.T, err error, key string, _ any) {
 }
 
 // AssertStr asserts err is instance of zrr.Error and has key with value exp.
-func AssertStr(t *testing.T, err error, key, exp string, _ any) {
+func AssertStr(t *testing.T, err error, key, exp string, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -80,7 +80,7 @@ func AssertStr(t *testing.T, err error, key, exp string, _ any) {
 }
 
 // AssertInt asserts err is instance of zrr.Error and has key with value exp.
-func AssertInt(t *testing.T, err error, key string, exp int, _ any) {
+func AssertInt(t *testing.T, err error, key string, exp int, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -90,7 +90,7 @@ func AssertInt(t *testing.T, err error, key string, exp int, _ any) {
 }
 
 // AssertInt64 asserts err is instance of zrr.Error and has key with value exp.
-func AssertInt64(t *testing.T, err error, key string, exp int64, _ any) {
+func AssertInt64(t *testing.T, err error, key string, exp int64, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -100,7 +100,7 @@ func AssertInt64(t *testing.T, err error, key string, exp int64, _ any) {
 }
 
 // AssertFloat64 asserts err is instance of zrr.Error and has key with value exp.
-func AssertFloat64(t *testing.T, err error, key string, exp float64, _ any) {
+func AssertFloat64(t *testing.T, err error, key string, exp float64, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -110,7 +110,7 @@ func AssertFloat64(t *testing.T, err error, key string, exp float64, _ any) {
 }
 
 // AssertTime asserts err is instance of zrr.Error and has key with value exp.
-func AssertTime(t *testing.T, err error, key string, exp time.Time, _ any) {
+func AssertTime(t *testing.T, err error, key string, exp time.Time, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)
@@ -120,7 +120,7 @@ func AssertTime(t *testing.T, err error, key string, exp time.Time, _ any) {
 }
 
 // AssertBool asserts err is instance of zrr.Error and has key with value exp.
-func AssertBool(t *testing.T, err error, key string, exp bool, _ any) {
+func AssertBool(t *testing.T, err error, key string, exp bool, _ ...any) {
 	t.Helper()
 
 	assert.NotNil(t, err)

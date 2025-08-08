@@ -195,6 +195,20 @@ func Test_Error_GetMetadata_multi(t *testing.T) {
 	assert.Equal(t, exp, err.GetMetadata())
 }
 
+func Test_Error_MetaAll(t *testing.T) {
+	// --- Given ---
+	err0 := Imm("immutable error", "ECode").Int("key", 123)
+
+	// --- When ---
+	got := err0.MetaAll()
+
+	// --- Then ---
+	exp := map[string]interface{}{
+		"key": 123,
+	}
+	assert.Equal(t, exp, got)
+}
+
 func Test_Error_Wrap(t *testing.T) {
 	// --- Given ---
 	e := errors.New("std error")

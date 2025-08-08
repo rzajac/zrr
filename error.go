@@ -2,7 +2,6 @@
 //
 // The error context might be useful for example when logging errors which were
 // created in some deeper parts of your code.
-//
 package zrr
 
 import (
@@ -161,6 +160,10 @@ func (e *Error) SetMetadataFrom(src MetadataGetter) *Error {
 // considered read-only.
 func (e *Error) GetMetadata() map[string]interface{} { return e.meta }
 
+// MetaAll returns error metadata. The returned metadata map should be
+// considered read-only.
+func (e *Error) MetaAll() map[string]any { return e.meta }
+
 // with adds context to the error.
 func (e *Error) with(key string, v interface{}) *Error {
 	// Handle immutable error.
@@ -190,8 +193,7 @@ func (e *Error) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON unmarshal error's JSON representation.
 // Notes:
-//  - all metadata numeric values will be unmarshalled as float64
-//
+//   - all metadata numeric values will be unmarshalled as float64
 func (e *Error) UnmarshalJSON(data []byte) error {
 	m := make(map[string]interface{}, 3)
 
@@ -224,10 +226,10 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 }
 
 // isNil returns true if v is nil or v is nil interface.
-//func isNil(v interface{}) bool {
+// func isNil(v interface{}) bool {
 //	defer func() { recover() }()
 //	return v == nil || reflect.ValueOf(v).IsNil()
-//}
+// }
 
 // firstCode returns first code from the slice.
 func fistCode(code ...string) string {
